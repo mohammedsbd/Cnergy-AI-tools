@@ -2,15 +2,16 @@ import React from 'react'
 import {assets} from '../assets/assets'
 import { useNavigate } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
+import {useClerk,UserButton,useUser} from "@clerk/clerk-react"
 
 const NavBar = () => {
   const navigate=useNavigate()
   return (
-    <div className="fixed z-5 w-full backdrop-blur-2xl flex justify-between items-center py-3 px-4 sm:px-20 x1:px-32">
+    <div className="fixed z-5 w-full backdrop-blur-2xl flex justify-between items-center py-3 px-4 sm:px-20 x1:px-32 ">
       <img
         src={assets.logo}
         alt=""
-        className="w-32 sm:w-44"
+        className="w-32 sm:w-44 cursor-pointer"
         onClick={() => navigate("/")}
       />
 
