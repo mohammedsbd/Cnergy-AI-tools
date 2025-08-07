@@ -9,6 +9,7 @@ import GenerateImages from './components/pages/GenerateImages';
 import RemoveBackground from './components/pages/RemoveBackground';
 import RemoveObject from './components/pages/RemoveObject';
 import ReviewResume from "./components/pages/ReviewResume";
+import Community from "./components/pages/Community";
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
         <Route path="remove-background" element={<RemoveBackground />} />
         <Route path="remove-object" element={<RemoveObject />} />
         <Route path="review-resume" element={<ReviewResume />} />
+        <Route path="Community" element={<Community />} />
         {/* /ai/blog-titles */}
       </Route>
     </Routes>
