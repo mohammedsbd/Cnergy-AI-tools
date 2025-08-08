@@ -1,4 +1,4 @@
-const App = () => {
+const Testimonial = () => {
   const dummyTestimonialData = [
     {
       image:
@@ -128,3 +128,4 @@ const App = () => {
     </div>
   );
 };
+export default Testimonial;
