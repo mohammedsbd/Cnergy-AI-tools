@@ -1,4 +1,5 @@
 
+import AiTools from "../AiTools.jsx"
 import Hero from "../Hero.jsx"
 import NavBar from "../NavBar.jsx"
 
@@ -7,6 +8,7 @@ const Home = () => {
     <>
     <NavBar/>
     <Hero/>
+    <AiTools/>
     </>
   )
 }
