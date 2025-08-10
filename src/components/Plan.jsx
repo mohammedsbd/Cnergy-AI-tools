@@ -1,5 +1,5 @@
-import React from 'react'
-import {PricingTabel} from '@clerk/clerk-react'
+// import React from 'react'
+import {PricingTable} from '@clerk/clerk-react'
 
 const Plan = () => {
   return (
@@ -13,11 +13,10 @@ const Plan = () => {
         content creation needs
       </p>
       <div className='mt-4 max-sm:mx-8'>
-        <PricingTabel/>
+        <PricingTable/>
       </div>
     </div>
-    
-  );
+    );
 }
 
 export default Plan
