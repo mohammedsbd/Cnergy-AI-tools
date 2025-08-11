@@ -1,11 +1,13 @@
 import React from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
+import { assets } from '../../assets/assets'
 
 
 const Layout = () => {
+  const navigate=useNavigate()
   return (
-    <div>
-      <h1>Layout</h1>
+    <div className='flex flex-col min-h-screen h-screen justify-start items-start'>
+    <nav><img src={assets.logo} alt="" onClick={()=>navigate('/')}/></nav>
       <Outlet />
     </div>
   )
