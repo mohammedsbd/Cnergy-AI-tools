@@ -4,6 +4,7 @@ import Hero from "../Hero.jsx"
 import NavBar from "../NavBar.jsx"
 import Testimonial from "../Testimonial.jsx";  
 import Plan from "../Plan.jsx";
+import Footer from "../Footer.jsx";
 
 const Home = () => {
   return (
@@ -13,6 +14,7 @@ const Home = () => {
       <AiTools />
       <Testimonial />
       <Plan/>
+      <Footer />
     </>
   );
 }
