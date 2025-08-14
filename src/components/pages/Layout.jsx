@@ -14,7 +14,7 @@ const Layout = () => {
   return user ? (
     <div className="flex flex-col min-h-screen h-screen justify-start items-start">
       <nav className="w-full px-8 min-h-14 flex items-center justify-between border-b border-gray-200">
-        <img src={assets.logo} alt="" onClick={() => navigate("/")} />
+        <img src={assets.logo} alt="" className='cursor-pointer'  onClick={() => navigate("/")} />
         {sidebar ? (
           <X
             onClick={() => setSidebar(false)}
