@@ -2,6 +2,8 @@ import React from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { assets } from '../../assets/assets'
 import { MenuIcon, X } from 'lucide-react'
+import { useState } from 'react'
+import Sidebar from '../Sidebar'
 
 
 const Layout = () => {
@@ -23,7 +25,13 @@ const Layout = () => {
           />
         )}
       </nav>
-      <Outlet />
+
+      <div className="flex-1 w-full flex h-[calc(100vh-64px)]">
+        <Sidebar sidebar={sidebar} setSidebar={setSidebar} />
+        <div className='flex-1 bg-[#F4F7FB]'>
+          <Outlet />
+        </div>
+      </div>
     </div>
   );
 }
