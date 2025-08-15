@@ -8,7 +8,7 @@ const Creationitem = ({item}) => {
 <h2>{item.prompt}</h2>
 <p className='text-gray-500'>{item.type}-{new Date(item.createdAt).toLocaleDateString()}</p>
 </div>
-<button></button>
+<button className='bg-[#EFF6FF] border border-[#BFD8FE] text-[#1E40AF] px-4 py-1 rounded-full'>{item.type}</button>
       </div>
     </div>
   )
