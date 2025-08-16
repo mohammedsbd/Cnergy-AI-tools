@@ -1,6 +1,20 @@
 import React from 'react'
 
 const BlogTitles = () => {
+
+  const articleLength = [
+      { length: 800, text: "Short (500-800 words)" },
+      { length: 1200, text: "Medium (800-1200 words)" },
+      { length: 1600, text: "Long (1200+ words)" },
+    ];
+  
+    const [selectedLength, setSelectedLength] = useState(articleLength[0]);
+    const [input, setInput] = useState("");
+  
+    const onSubmitHandler=async (e)=>{
+      e.preventDefault()
+  
+    }
   return (
     <div className="h-full overflow-y-scroll p-6 flex items-start flex-wrap gap-4 text-slate-700">
       {/* left-col */}
