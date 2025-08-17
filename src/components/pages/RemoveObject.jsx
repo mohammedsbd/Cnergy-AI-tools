@@ -1,7 +1,10 @@
+import { Sparkles } from 'lucide-react';
 import React from 'react'
+import { useState } from 'react';
 
 const RemoveObject = () => {
    const [input, setInput] = useState("");
+   const [object, setObject] = useState("");
       
         const onSubmitHandler=async (e)=>{
           e.preventDefault()
@@ -17,8 +20,8 @@ const RemoveObject = () => {
         className="w-full max-w-lg p-4 bg-white rounded-lg border border-gray-200"
       >
         <div className="flex items-center gap-3">
-          <Sparkles className="w-6 text-[#FF4938]" />
-          <h1 className="text-xl font-semibold">Background Removal</h1>
+          <Sparkles className="w-6 text-[#4A7AFF]" />
+          <h1 className="text-xl font-semibold">Object Removal</h1>
         </div>
 
         <p className="mt-6 text-sm font-medium">Upload Image</p>
@@ -30,9 +33,16 @@ const RemoveObject = () => {
           required
         />
 
-        <p className="text-xs text-gray-500 font-light mt-1 ">
-          Supports JPG,PNG and other image format
-        </p>
+        <p className="mt-6 text-sm font-medium">Describe Your Image</p>
+        <textarea
+          rows={4}
+          onChange={(e) => setInput(e.target.checked)}
+          value={input}
+          className="w-full p-2 px-3 mt-2 outline-none text-sm rounded-md border border-gray-300"
+          placeholder="Describe Your Image..."
+          required
+          checked={publish}
+        />
         <button className=" cursor-pointer w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#F6AB41] to-[#FF4938] text-white px-4 py-2 mt-6 text-sm rounded-lg ">
           <Eraser className="w-5 " />
           Remove Background
