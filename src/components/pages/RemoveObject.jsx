@@ -41,7 +41,7 @@ const RemoveObject = () => {
           className="w-full p-2 px-3 mt-2 outline-none text-sm rounded-md border border-gray-300"
           placeholder="e.g watch or spoon,Only single object name..."
           required
-          checked={publish}
+          // checked={publish}
         />
         <button className=" cursor-pointer w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#417DF6] to-[#8E37EB] text-white px-4 py-2 mt-6 text-sm rounded-lg ">
           <Scissors className="w-5 " />
