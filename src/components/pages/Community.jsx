@@ -1,100 +1,95 @@
 import React, { useState, useEffect } from "react";
 
-const generateRandomData = () => {
-  const categories = ["Tech", "Finance", "Healthcare", "Education", "Retail"];
-  const statusOptions = ["Active", "Pending", "Archived"];
-  const newItems = [];
+const Card = ({ title, description, image, onClick }) => {
+  const [isFlipped, setIsFlipped] = useState(false);
 
-  for (let i = 0; i < 25; i++) {
-    const randomCategory =
-      categories[Math.floor(Math.random() * categories.length)];
-    const randomStatus =
-      statusOptions[Math.floor(Math.random() * statusOptions.length)];
-
-    newItems.push({
-      id: `item-${i}`,
-      name: `Project ${String.fromCharCode(65 + i)}`,
-      category: randomCategory,
-      status: randomStatus,
-      value: (Math.random() * 10000).toFixed(2),
-      createdDate: new Date(
-        Date.now() - Math.random() * 86400000 * 30
-      ).toLocaleDateString(),
-    });
-  }
-  return newItems;
-};
-
-const DataDashboard = () => {
-  const [data, setData] = useState([]);
-  const [filter, setFilter] = useState("All");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate a data fetch from an API
-    setTimeout(() => {
-      setData(generateRandomData());
-      setLoading(false);
-    }, 1000);
-  }, []);
-
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
+  const handleCardClick = () => {
+    setIsFlipped(!isFlipped);
+    if (onClick) {
+      onClick();
+    }
   };
 
-  const filteredData = data.filter((item) => {
-    if (filter === "All") {
-      return true;
-    }
-    return item.category === filter;
-  });
-
-  if (loading) {
-    return <div className="loading-state">Loading dashboard data...</div>;
-  }
-
   return (
-    <div className="dashboard-container">
-      <h2>Project Dashboard</h2>
-      <div className="filter-controls">
-        <label htmlFor="category-filter">Filter by Category:</label>
-        <select
-          id="category-filter"
-          onChange={handleFilterChange}
-          value={filter}
-        >
-          <option value="All">All</option>
-          <option value="Tech">Tech</option>
-          <option value="Finance">Finance</option>
-          <option value="Healthcare">Healthcare</option>
-          <option value="Education">Education</option>
-          <option value="Retail">Retail</option>
-        </select>
+    <div
+      className={`card-container ${isFlipped ? "flipped" : ""}`}
+      onClick={handleCardClick}
+    >
+      <div className="card-front">
+        <img src={image} alt={title} className="card-image" />
+        <h3 className="card-title">{title}</h3>
       </div>
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Status</th>
-            <th>Value</th>
-            <th>Created Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredData.map((item) => (
-            <tr key={item.id}>
-              <td>{item.name}</td>
-              <td>{item.category}</td>
-              <td>{item.status}</td>
-              <td>${item.value}</td>
-              <td>{item.createdDate}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="card-back">
+        <p className="card-description">{description}</p>
+      </div>
     </div>
   );
 };
 
-export default DataDashboard;
+const FlashcardApp = () => {
+  const [flashcards, setFlashcards] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate fetching flashcard data from an API
+    const fetchFlashcards = async () => {
+      setTimeout(() => {
+        const data = [
+          {
+            id: 1,
+            title: "React",
+            description: "A JavaScript library for building user interfaces.",
+            image: "https://via.placeholder.com/150/0000FF/FFFFFF?text=React",
+          },
+          {
+            id: 2,
+            title: "JSX",
+            description:
+              "A syntax extension for JavaScript, used with React to describe UI.",
+            image: "https://via.placeholder.com/150/FF0000/FFFFFF?text=JSX",
+          },
+          {
+            id: 3,
+            title: "State",
+            description:
+              "An object that holds some information about the component.",
+            image: "https://via.placeholder.com/150/00FF00/FFFFFF?text=State",
+          },
+          {
+            id: 4,
+            title: "Props",
+            description:
+              "Short for properties; used to pass data from a parent to a child component.",
+            image: "https://via.placeholder.com/150/FFFF00/000000?text=Props",
+          },
+        ];
+        setFlashcards(data);
+        setLoading(false);
+      }, 1500);
+    };
+
+    fetchFlashcards();
+  }, []);
+
+  if (loading) {
+    return <div className="loading-message">Loading flashcards...</div>;
+  }
+
+  return (
+    <div className="flashcard-deck">
+      <h2>React Flashcards</h2>
+      <div className="card-grid">
+        {flashcards.map((card) => (
+          <Card
+            key={card.id}
+            title={card.title}
+            description={card.description}
+            image={card.image}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default FlashcardApp;
