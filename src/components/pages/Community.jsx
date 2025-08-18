@@ -1,168 +1,150 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
-// Utility function to generate a random position for a Mame ball
-const getRandomPosition = (containerWidth, containerHeight, size) => {
-  return {
-    x: Math.random() * (containerWidth - size),
-    y: Math.random() * (containerHeight - size),
-  };
+// API call simulation utility
+const fetchCommunityPosts = async (count = 10) => {
+  const categories = ["Announcements", "Discussions", "Help", "Showcase"];
+  const userNames = ["Alice", "Bob", "Charlie", "Dana", "Eve"];
+  const generatePost = (id) => ({
+    id,
+    title: `Post #${id}: ${
+      Math.random() > 0.5 ? "A question about React" : "Sharing a cool project!"
+    }`,
+    content: `This is a randomly generated post content. It's designed to be a bit longer to simulate real data. Here's a little more filler text to reach the desired length and make it look more realistic. We can talk about hooks, state management, or component lifecycles.`,
+    author: userNames[Math.floor(Math.random() * userNames.length)],
+    category: categories[Math.floor(Math.random() * categories.length)],
+    likes: Math.floor(Math.random() * 500),
+    comments: Math.floor(Math.random() * 100),
+    timestamp: new Date(
+      Date.now() - Math.floor(Math.random() * 86400000 * 30)
+    ).toLocaleString(),
+  });
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const posts = Array.from({ length: count }, (_, i) =>
+        generatePost(i + 1)
+      );
+      resolve(posts);
+    }, 1500);
+  });
 };
 
-// Mame component - the core animated element
-const Mame = React.memo(
-  ({ id, size, speed, color, onRemove, containerWidth, containerHeight }) => {
-    const [position, setPosition] = useState(
-      getRandomPosition(containerWidth, containerHeight, size)
-    );
-    const [velocity, setVelocity] = useState({
-      x: (Math.random() - 0.5) * speed,
-      y: (Math.random() - 0.5) * speed,
-    });
-    const animationRef = useRef();
-
-    const animate = useCallback(() => {
-      setPosition((prev) => {
-        let newX = prev.x + velocity.x;
-        let newY = prev.y + velocity.y;
-
-        // Bounce off horizontal walls
-        if (newX <= 0 || newX + size >= containerWidth) {
-          setVelocity((prevVel) => ({ ...prevVel, x: -prevVel.x }));
-          newX = newX <= 0 ? 0 : containerWidth - size;
-        }
-        // Bounce off vertical walls
-        if (newY <= 0 || newY + size >= containerHeight) {
-          setVelocity((prevVel) => ({ ...prevVel, y: -prevVel.y }));
-          newY = newY <= 0 ? 0 : containerHeight - size;
-        }
-
-        // Stop and remove if the user gets bored
-        if (Math.random() < 0.0005) {
-          onRemove(id);
-        }
-
-        return { x: newX, y: newY };
-      });
-
-      animationRef.current = requestAnimationFrame(animate);
-    }, [velocity, size, containerWidth, containerHeight, onRemove, id, speed]);
-
-    useEffect(() => {
-      animationRef.current = requestAnimationFrame(animate);
-      return () => cancelAnimationFrame(animationRef.current);
-    }, [animate]);
-
-    return (
-      <div
-        style={{
-          position: "absolute",
-          top: `${position.y}px`,
-          left: `${position.x}px`,
-          width: `${size}px`,
-          height: `${size}px`,
-          backgroundColor: color,
-          borderRadius: "50%",
-          boxShadow: `0 0 10px 5px ${color}`,
-          transition: "box-shadow 0.2s linear",
-        }}
-      />
-    );
-  }
-);
-
-// The main application component to manage the Mame balls
-const MameBallGenerator = () => {
-  const [mameBalls, setMameBalls] = useState([]);
-  const [isGenerating, setIsGenerating] = useState(true);
-  const generatorIntervalRef = useRef();
-  const containerRef = useRef(null);
-  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
-
-  // Update container dimensions on mount and resize
-  useEffect(() => {
-    const updateSize = () => {
-      if (containerRef.current) {
-        setContainerSize({
-          width: containerRef.current.clientWidth,
-          height: containerRef.current.clientHeight,
-        });
-      }
-    };
-    window.addEventListener("resize", updateSize);
-    updateSize(); // Initial call
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
-
-  const addMame = useCallback(() => {
-    const size = Math.random() * 40 + 20; // Size between 20 and 60
-    const newMame = {
-      id: Date.now() + Math.random(),
-      size: size,
-      speed: Math.random() * 2 + 1, // Speed between 1 and 3
-      color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-    };
-    setMameBalls((prev) => [...prev, newMame]);
-  }, []);
-
-  const removeMame = useCallback((idToRemove) => {
-    setMameBalls((prev) => prev.filter((m) => m.id !== idToRemove));
-  }, []);
-
-  useEffect(() => {
-    if (isGenerating) {
-      generatorIntervalRef.current = setInterval(addMame, 200);
-    } else {
-      clearInterval(generatorIntervalRef.current);
-    }
-    return () => clearInterval(generatorIntervalRef.current);
-  }, [isGenerating, addMame]);
-
-  const toggleGeneration = () => {
-    setIsGenerating(!isGenerating);
-  };
-
-  const clearAllMames = () => {
-    setMameBalls([]);
+// Component for a single community post card
+const PostCard = React.memo(({ post, onLike }) => {
+  const handleLike = () => {
+    onLike(post.id);
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="mame-generator-container"
-      style={{
-        position: "relative",
-        width: "100%",
-        height: "100vh",
-        backgroundColor: "#000",
-        overflow: "hidden",
-        cursor: "crosshair",
-      }}
-    >
-      <div style={{ position: "fixed", top: "20px", left: "20px", zIndex: 10 }}>
-        <button
-          onClick={toggleGeneration}
-          style={{ marginRight: "10px", padding: "10px" }}
-        >
-          {isGenerating ? "Stop Generating" : "Start Generating"}
-        </button>
-        <button onClick={clearAllMames} style={{ padding: "10px" }}>
-          Clear All
-        </button>
+    <div className="post-card">
+      <h3 className="post-title">{post.title}</h3>
+      <div className="post-meta">
+        <span className="post-author">By: {post.author}</span>
+        <span className="post-category">Category: {post.category}</span>
       </div>
-      {mameBalls.map((mame) => (
-        <Mame
-          key={mame.id}
-          id={mame.id}
-          size={mame.size}
-          speed={mame.speed}
-          color={mame.color}
-          onRemove={removeMame}
-          containerWidth={containerSize.width}
-          containerHeight={containerSize.height}
+      <p className="post-content">{post.content.substring(0, 150)}...</p>
+      <div className="post-actions">
+        <button onClick={handleLike} className="like-button">
+          👍 Like ({post.likes})
+        </button>
+        <span className="comment-count">💬 {post.comments} Comments</span>
+        <span className="post-timestamp">{post.timestamp}</span>
+      </div>
+    </div>
+  );
+});
+
+// Main Community Board Component
+const CommunityBoard = () => {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("All");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("timestamp");
+  const postContainerRef = useRef(null);
+
+  useEffect(() => {
+    const loadPosts = async () => {
+      setLoading(true);
+      const fetchedPosts = await fetchCommunityPosts(50);
+      setPosts(fetchedPosts);
+      setLoading(false);
+    };
+    loadPosts();
+  }, []);
+
+  const handleLikePost = useCallback((postId) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === postId ? { ...post, likes: post.likes + 1 } : post
+      )
+    );
+  }, []);
+
+  const filteredPosts = posts.filter((post) => {
+    const matchesCategory = filter === "All" || post.category === filter;
+    const matchesSearch =
+      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.author.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  const sortedPosts = filteredPosts.sort((a, b) => {
+    if (sortBy === "likes") return b.likes - a.likes;
+    if (sortBy === "comments") return b.comments - a.comments;
+    return new Date(b.timestamp) - new Date(a.timestamp);
+  });
+
+  if (loading) {
+    return <div className="loading-message">Loading community content...</div>;
+  }
+
+  return (
+    <div className="community-board-container">
+      <h1 className="board-title">Community Board</h1>
+      <div className="controls">
+        <input
+          type="text"
+          placeholder="Search posts..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
         />
-      ))}
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="filter-select"
+        >
+          <option value="All">All Categories</option>
+          <option value="Announcements">Announcements</option>
+          <option value="Discussions">Discussions</option>
+          <option value="Help">Help</option>
+          <option value="Showcase">Showcase</option>
+        </select>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="sort-select"
+        >
+          <option value="timestamp">Newest</option>
+          <option value="likes">Most Liked</option>
+          <option value="comments">Most Commented</option>
+        </select>
+      </div>
+      <div ref={postContainerRef} className="post-list">
+        {sortedPosts.length > 0 ? (
+          sortedPosts.map((post) => (
+            <PostCard key={post.id} post={post} onLike={handleLikePost} />
+          ))
+        ) : (
+          <div className="no-results-message">
+            No posts found matching your criteria.
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default MameBallGenerator;
+export default CommunityBoard;
