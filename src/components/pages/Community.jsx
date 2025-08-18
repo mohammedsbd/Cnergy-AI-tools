@@ -1,146 +1,168 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 
-// Main component: A simple chat interface
-const ChatRoom = () => {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const chatEndRef = useRef(null);
-
-  // Auto-scroll to the bottom of the chat window
-  const scrollToBottom = () => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+// Utility function to generate a random position for a Mame ball
+const getRandomPosition = (containerWidth, containerHeight, size) => {
+  return {
+    x: Math.random() * (containerWidth - size),
+    y: Math.random() * (containerHeight - size),
   };
+};
 
-  // Simulate a bot response
-  const handleBotResponse = (userMessage) => {
-    const responses = {
-      hello: "Hello there! How can I help you today?",
-      "how are you?": "I'm a bot, but I'm doing great! Thanks for asking.",
-      "what is react?":
-        "React is a JavaScript library for building user interfaces.",
-      bye: "Goodbye! Have a great day!",
+// Mame component - the core animated element
+const Mame = React.memo(
+  ({ id, size, speed, color, onRemove, containerWidth, containerHeight }) => {
+    const [position, setPosition] = useState(
+      getRandomPosition(containerWidth, containerHeight, size)
+    );
+    const [velocity, setVelocity] = useState({
+      x: (Math.random() - 0.5) * speed,
+      y: (Math.random() - 0.5) * speed,
+    });
+    const animationRef = useRef();
+
+    const animate = useCallback(() => {
+      setPosition((prev) => {
+        let newX = prev.x + velocity.x;
+        let newY = prev.y + velocity.y;
+
+        // Bounce off horizontal walls
+        if (newX <= 0 || newX + size >= containerWidth) {
+          setVelocity((prevVel) => ({ ...prevVel, x: -prevVel.x }));
+          newX = newX <= 0 ? 0 : containerWidth - size;
+        }
+        // Bounce off vertical walls
+        if (newY <= 0 || newY + size >= containerHeight) {
+          setVelocity((prevVel) => ({ ...prevVel, y: -prevVel.y }));
+          newY = newY <= 0 ? 0 : containerHeight - size;
+        }
+
+        // Stop and remove if the user gets bored
+        if (Math.random() < 0.0005) {
+          onRemove(id);
+        }
+
+        return { x: newX, y: newY };
+      });
+
+      animationRef.current = requestAnimationFrame(animate);
+    }, [velocity, size, containerWidth, containerHeight, onRemove, id, speed]);
+
+    useEffect(() => {
+      animationRef.current = requestAnimationFrame(animate);
+      return () => cancelAnimationFrame(animationRef.current);
+    }, [animate]);
+
+    return (
+      <div
+        style={{
+          position: "absolute",
+          top: `${position.y}px`,
+          left: `${position.x}px`,
+          width: `${size}px`,
+          height: `${size}px`,
+          backgroundColor: color,
+          borderRadius: "50%",
+          boxShadow: `0 0 10px 5px ${color}`,
+          transition: "box-shadow 0.2s linear",
+        }}
+      />
+    );
+  }
+);
+
+// The main application component to manage the Mame balls
+const MameBallGenerator = () => {
+  const [mameBalls, setMameBalls] = useState([]);
+  const [isGenerating, setIsGenerating] = useState(true);
+  const generatorIntervalRef = useRef();
+  const containerRef = useRef(null);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+
+  // Update container dimensions on mount and resize
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        setContainerSize({
+          width: containerRef.current.clientWidth,
+          height: containerRef.current.clientHeight,
+        });
+      }
     };
-    const botReply =
-      responses[userMessage.toLowerCase()] ||
-      "I'm not sure how to respond to that.";
+    window.addEventListener("resize", updateSize);
+    updateSize(); // Initial call
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
 
-    setTimeout(() => {
-      setMessages((prev) => [...prev, { sender: "bot", text: botReply }]);
-      scrollToBottom();
-    }, 500);
-  };
+  const addMame = useCallback(() => {
+    const size = Math.random() * 40 + 20; // Size between 20 and 60
+    const newMame = {
+      id: Date.now() + Math.random(),
+      size: size,
+      speed: Math.random() * 2 + 1, // Speed between 1 and 3
+      color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+    };
+    setMameBalls((prev) => [...prev, newMame]);
+  }, []);
 
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (input.trim() === "") return;
-
-    const userMessage = input.trim();
-    setMessages((prev) => [...prev, { sender: "user", text: userMessage }]);
-    setInput("");
-
-    handleBotResponse(userMessage);
-  };
+  const removeMame = useCallback((idToRemove) => {
+    setMameBalls((prev) => prev.filter((m) => m.id !== idToRemove));
+  }, []);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (isGenerating) {
+      generatorIntervalRef.current = setInterval(addMame, 200);
+    } else {
+      clearInterval(generatorIntervalRef.current);
+    }
+    return () => clearInterval(generatorIntervalRef.current);
+  }, [isGenerating, addMame]);
+
+  const toggleGeneration = () => {
+    setIsGenerating(!isGenerating);
+  };
+
+  const clearAllMames = () => {
+    setMameBalls([]);
+  };
 
   return (
-    <div className="chat-container">
-      <h2>Simple Bot Chat</h2>
-      <div className="message-list">
-        {messages.map((msg, index) => (
-          <div key={index} className={`message ${msg.sender}`}>
-            <span className="sender-name">
-              {msg.sender === "user" ? "You" : "Bot"}:
-            </span>
-            <div className="message-bubble">{msg.text}</div>
-          </div>
-        ))}
-        <div ref={chatEndRef} />
+    <div
+      ref={containerRef}
+      className="mame-generator-container"
+      style={{
+        position: "relative",
+        width: "100%",
+        height: "100vh",
+        backgroundColor: "#000",
+        overflow: "hidden",
+        cursor: "crosshair",
+      }}
+    >
+      <div style={{ position: "fixed", top: "20px", left: "20px", zIndex: 10 }}>
+        <button
+          onClick={toggleGeneration}
+          style={{ marginRight: "10px", padding: "10px" }}
+        >
+          {isGenerating ? "Stop Generating" : "Start Generating"}
+        </button>
+        <button onClick={clearAllMames} style={{ padding: "10px" }}>
+          Clear All
+        </button>
       </div>
-      <form onSubmit={handleSendMessage} className="message-form">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a message..."
+      {mameBalls.map((mame) => (
+        <Mame
+          key={mame.id}
+          id={mame.id}
+          size={mame.size}
+          speed={mame.speed}
+          color={mame.color}
+          onRemove={removeMame}
+          containerWidth={containerSize.width}
+          containerHeight={containerSize.height}
         />
-        <button type="submit">Send</button>
-      </form>
-      <style jsx>{`
-        .chat-container {
-          display: flex;
-          flex-direction: column;
-          width: 400px;
-          height: 500px;
-          border: 1px solid #ccc;
-          border-radius: 8px;
-          overflow: hidden;
-          margin: 20px auto;
-        }
-        .message-list {
-          flex-grow: 1;
-          padding: 10px;
-          overflow-y: auto;
-          background-color: #f0f0f0;
-        }
-        .message {
-          display: flex;
-          margin-bottom: 10px;
-          align-items: flex-end;
-        }
-        .message.user {
-          justify-content: flex-end;
-        }
-        .message.bot {
-          justify-content: flex-start;
-        }
-        .message-bubble {
-          padding: 8px 12px;
-          border-radius: 20px;
-          max-width: 70%;
-          line-height: 1.4;
-        }
-        .message.user .message-bubble {
-          background-color: #007bff;
-          color: white;
-        }
-        .message.bot .message-bubble {
-          background-color: #e2e2e2;
-          color: #333;
-        }
-        .sender-name {
-          font-weight: bold;
-          font-size: 0.8em;
-          margin-right: 5px;
-        }
-        .message.user .sender-name {
-          display: none;
-        }
-        .message-form {
-          display: flex;
-          padding: 10px;
-          border-top: 1px solid #ccc;
-        }
-        .message-form input {
-          flex-grow: 1;
-          padding: 8px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-        }
-        .message-form button {
-          margin-left: 10px;
-          padding: 8px 12px;
-          background-color: #007bff;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-        }
-      `}</style>
+      ))}
     </div>
   );
 };
 
-export default ChatRoom;
+export default MameBallGenerator;
