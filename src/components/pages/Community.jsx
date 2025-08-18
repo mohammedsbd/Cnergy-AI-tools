@@ -1,19 +1,36 @@
+import { useState } from "react";
+
 export default function Community() {
-  const testimonials = [
-    { name: "Alice", text: "This community changed my life!" },
-    { name: "Bob", text: "I made great friends here." },
-    { name: "Charlie", text: "The events are top-notch!" },
+  const [role, setRole] = useState("all");
+
+  const members = [
+    { name: "Alice", role: "Admin" },
+    { name: "Bob", role: "Member" },
+    { name: "Charlie", role: "Moderator" },
   ];
+
+  const filtered =
+    role === "all" ? members : members.filter((m) => m.role === role);
 
   return (
     <div style={{ padding: "2rem" }}>
-      <h1>🙌 What Members Say</h1>
-      {testimonials.map((t, i) => (
-        <blockquote key={i} style={{ marginBottom: "1rem" }}>
-          <p>"{t.text}"</p>
-          <footer>- {t.name}</footer>
-        </blockquote>
-      ))}
+      <h1>👥 Community Members</h1>
+      <label>
+        Filter:{" "}
+        <select value={role} onChange={(e) => setRole(e.target.value)}>
+          <option value="all">All</option>
+          <option value="Admin">Admin</option>
+          <option value="Member">Member</option>
+          <option value="Moderator">Moderator</option>
+        </select>
+      </label>
+      <ul>
+        {filtered.map((m, i) => (
+          <li key={i}>
+            {m.name} — {m.role}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
