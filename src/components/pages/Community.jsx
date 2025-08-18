@@ -1,32 +1,19 @@
-import { useState } from "react";
-
 export default function Community() {
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-
-  const subscribe = (e) => {
-    e.preventDefault();
-    if (!email.includes("@")) {
-      setMessage("❌ Invalid email");
-    } else {
-      setMessage(`✅ Subscribed with ${email}`);
-      setEmail("");
-    }
-  };
+  const testimonials = [
+    { name: "Alice", text: "This community changed my life!" },
+    { name: "Bob", text: "I made great friends here." },
+    { name: "Charlie", text: "The events are top-notch!" },
+  ];
 
   return (
     <div style={{ padding: "2rem" }}>
-      <h1>📰 Community Newsletter</h1>
-      <form onSubmit={subscribe}>
-        <input
-          type="email"
-          value={email}
-          placeholder="Enter email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <button type="submit">Subscribe</button>
-      </form>
-      {message && <p style={{ marginTop: "1rem" }}>{message}</p>}
+      <h1>🙌 What Members Say</h1>
+      {testimonials.map((t, i) => (
+        <blockquote key={i} style={{ marginBottom: "1rem" }}>
+          <p>"{t.text}"</p>
+          <footer>- {t.name}</footer>
+        </blockquote>
+      ))}
     </div>
   );
 }
