@@ -1,150 +1,221 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import Chart from "react-apexcharts"; // A popular charting library for React
 
-// API call simulation utility
-const fetchCommunityPosts = async (count = 10) => {
-  const categories = ["Announcements", "Discussions", "Help", "Showcase"];
-  const userNames = ["Alice", "Bob", "Charlie", "Dana", "Eve"];
-  const generatePost = (id) => ({
-    id,
-    title: `Post #${id}: ${
-      Math.random() > 0.5 ? "A question about React" : "Sharing a cool project!"
-    }`,
-    content: `This is a randomly generated post content. It's designed to be a bit longer to simulate real data. Here's a little more filler text to reach the desired length and make it look more realistic. We can talk about hooks, state management, or component lifecycles.`,
-    author: userNames[Math.floor(Math.random() * userNames.length)],
-    category: categories[Math.floor(Math.random() * categories.length)],
-    likes: Math.floor(Math.random() * 500),
-    comments: Math.floor(Math.random() * 100),
-    timestamp: new Date(
-      Date.now() - Math.floor(Math.random() * 86400000 * 30)
-    ).toLocaleString(),
-  });
+// --- Utility Functions ---
 
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const posts = Array.from({ length: count }, (_, i) =>
-        generatePost(i + 1)
-      );
-      resolve(posts);
-    }, 1500);
-  });
+// Generates a random integer within a range
+const getRandomInt = (min, max) =>
+  Math.floor(Math.random() * (max - min + 1)) + min;
+
+// Generates an array of random data for the charts
+const generateChartData = (count) => {
+  const data = [];
+  for (let i = 0; i < count; i++) {
+    data.push(getRandomInt(50, 200));
+  }
+  return data;
 };
 
-// Component for a single community post card
-const PostCard = React.memo(({ post, onLike }) => {
-  const handleLike = () => {
-    onLike(post.id);
-  };
+// Generates a random date within the last 30 days
+const getRandomDate = () => {
+  const day = getRandomInt(1, 28);
+  const month = getRandomInt(1, 12);
+  const year = 2024; // Fixed year for consistency
+  return new Date(year, month - 1, day).toLocaleDateString("en-US");
+};
 
+// Generates an array of mock table data
+const generateTableData = (count) => {
+  const products = [
+    "Product A",
+    "Product B",
+    "Product C",
+    "Product D",
+    "Product E",
+  ];
+  const data = [];
+  for (let i = 0; i < count; i++) {
+    data.push({
+      id: i,
+      product: products[getRandomInt(0, products.length - 1)],
+      sales: getRandomInt(100, 1000),
+      revenue: getRandomInt(500, 5000),
+      date: getRandomDate(),
+    });
+  }
+  return data;
+};
+
+// --- React Components ---
+
+// Component for a data card (e.g., total sales)
+const DataCard = React.memo(({ title, value, unit, color }) => (
+  <div className="data-card" style={{ borderLeft: `5px solid ${color}` }}>
+    <h4>{title}</h4>
+    <h3>
+      {value} {unit}
+    </h3>
+  </div>
+));
+
+// Component for a line chart
+const LineChart = React.memo(({ series, categories }) => {
+  const options = {
+    chart: { toolbar: { show: false } },
+    xaxis: { categories },
+    tooltip: { enabled: true },
+  };
   return (
-    <div className="post-card">
-      <h3 className="post-title">{post.title}</h3>
-      <div className="post-meta">
-        <span className="post-author">By: {post.author}</span>
-        <span className="post-category">Category: {post.category}</span>
-      </div>
-      <p className="post-content">{post.content.substring(0, 150)}...</p>
-      <div className="post-actions">
-        <button onClick={handleLike} className="like-button">
-          👍 Like ({post.likes})
-        </button>
-        <span className="comment-count">💬 {post.comments} Comments</span>
-        <span className="post-timestamp">{post.timestamp}</span>
-      </div>
+    <div className="chart-wrapper">
+      <Chart
+        options={options}
+        series={[{ name: "Sales", data: series }]}
+        type="line"
+        height={200}
+      />
     </div>
   );
 });
 
-// Main Community Board Component
-const CommunityBoard = () => {
-  const [posts, setPosts] = useState([]);
+// Component for a bar chart
+const BarChart = React.memo(({ series, categories }) => {
+  const options = {
+    chart: { toolbar: { show: false } },
+    xaxis: { categories },
+    plotOptions: { bar: { horizontal: false } },
+  };
+  return (
+    <div className="chart-wrapper">
+      <Chart
+        options={options}
+        series={[{ name: "Revenue", data: series }]}
+        type="bar"
+        height={200}
+      />
+    </div>
+  );
+});
+
+// Main Dashboard Component
+const DataDash = () => {
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("All");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("timestamp");
-  const postContainerRef = useRef(null);
+  const [metrics, setMetrics] = useState({});
+  const [lineChartData, setLineChartData] = useState([]);
+  const [barChartData, setBarChartData] = useState([]);
+  const [tableData, setTableData] = useState([]);
+  const timerRef = useRef(null);
+
+  // Simulates fetching all data from an API
+  const fetchData = useCallback(() => {
+    setLoading(true);
+    timerRef.current = setTimeout(() => {
+      const salesData = generateChartData(12);
+      const revenueData = generateChartData(5);
+      const mockTableData = generateTableData(15);
+
+      const totalSales = salesData.reduce((sum, val) => sum + val, 0);
+      const totalRevenue = revenueData.reduce((sum, val) => sum + val, 0);
+
+      setMetrics({ totalSales, totalRevenue });
+      setLineChartData(salesData);
+      setBarChartData(revenueData);
+      setTableData(mockTableData);
+      setLoading(false);
+    }, 2000); // Simulate a 2-second loading time
+  }, []);
 
   useEffect(() => {
-    const loadPosts = async () => {
-      setLoading(true);
-      const fetchedPosts = await fetchCommunityPosts(50);
-      setPosts(fetchedPosts);
-      setLoading(false);
-    };
-    loadPosts();
-  }, []);
-
-  const handleLikePost = useCallback((postId) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === postId ? { ...post, likes: post.likes + 1 } : post
-      )
-    );
-  }, []);
-
-  const filteredPosts = posts.filter((post) => {
-    const matchesCategory = filter === "All" || post.category === filter;
-    const matchesSearch =
-      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.author.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
-  const sortedPosts = filteredPosts.sort((a, b) => {
-    if (sortBy === "likes") return b.likes - a.likes;
-    if (sortBy === "comments") return b.comments - a.comments;
-    return new Date(b.timestamp) - new Date(a.timestamp);
-  });
+    fetchData();
+    return () => clearTimeout(timerRef.current);
+  }, [fetchData]);
 
   if (loading) {
-    return <div className="loading-message">Loading community content...</div>;
+    return <div className="loading-state">Loading dashboard data...</div>;
   }
 
+  const lineChartCategories = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const barChartCategories = [
+    "Product A",
+    "Product B",
+    "Product C",
+    "Product D",
+    "Product E",
+  ];
+
   return (
-    <div className="community-board-container">
-      <h1 className="board-title">Community Board</h1>
-      <div className="controls">
-        <input
-          type="text"
-          placeholder="Search posts..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
+    <div className="dashboard-container">
+      <h1 className="dashboard-title">DataDash Analytics</h1>
+
+      <div className="metrics-row">
+        <DataCard
+          title="Total Sales"
+          value={metrics.totalSales}
+          unit="units"
+          color="#4CAF50"
         />
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="filter-select"
-        >
-          <option value="All">All Categories</option>
-          <option value="Announcements">Announcements</option>
-          <option value="Discussions">Discussions</option>
-          <option value="Help">Help</option>
-          <option value="Showcase">Showcase</option>
-        </select>
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="sort-select"
-        >
-          <option value="timestamp">Newest</option>
-          <option value="likes">Most Liked</option>
-          <option value="comments">Most Commented</option>
-        </select>
+        <DataCard
+          title="Total Revenue"
+          value={metrics.totalRevenue}
+          unit="$"
+          color="#FFC107"
+        />
+        <DataCard
+          title="New Customers"
+          value={getRandomInt(50, 150)}
+          unit=""
+          color="#2196F3"
+        />
+        <DataCard
+          title="Avg. Order Value"
+          value={getRandomInt(20, 80)}
+          unit="$"
+          color="#9C27B0"
+        />
       </div>
-      <div ref={postContainerRef} className="post-list">
-        {sortedPosts.length > 0 ? (
-          sortedPosts.map((post) => (
-            <PostCard key={post.id} post={post} onLike={handleLikePost} />
-          ))
-        ) : (
-          <div className="no-results-message">
-            No posts found matching your criteria.
-          </div>
-        )}
+
+      <div className="charts-row">
+        <LineChart series={lineChartData} categories={lineChartCategories} />
+        <BarChart series={barChartData} categories={barChartCategories} />
+      </div>
+
+      <div className="table-wrapper">
+        <h2>Recent Transactions</h2>
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Sales</th>
+              <th>Revenue</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tableData.map((row) => (
+              <tr key={row.id}>
+                <td>{row.product}</td>
+                <td>{row.sales}</td>
+                <td>${row.revenue.toFixed(2)}</td>
+                <td>{row.date}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
 };
 
-export default CommunityBoard;
+export default DataDash;
