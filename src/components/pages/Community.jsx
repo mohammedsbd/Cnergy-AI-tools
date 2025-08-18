@@ -1,119 +1,145 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-const Particle = React.memo(({ id, x, y, color, size, velocity, onRemove }) => {
-  const [position, setPosition] = useState({ x, y });
-  const [currentSize, setCurrentSize] = useState(size);
-  const animationFrameRef = useRef();
+// Utility function to generate a random HSL color
+const getRandomHsl = () => `hsl(${Math.random() * 360}, 70%, 50%)`;
 
-  const animate = useCallback(() => {
-    setPosition((prev) => ({
-      x: prev.x + velocity.x,
-      y: prev.y + velocity.y,
-    }));
-    setCurrentSize((prev) => (prev > 0.1 ? prev - 0.1 : 0));
+// A single floating square component
+const FloatingSquare = React.memo(
+  ({ id, size, speed, direction, color, onRemove }) => {
+    const [position, setPosition] = useState({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+    });
+    const [rotation, setRotation] = useState(0);
+    const animationRef = useRef();
 
-    if (currentSize > 0.1) {
-      animationFrameRef.current = requestAnimationFrame(animate);
-    } else {
-      onRemove(id);
-    }
-  }, [id, velocity, onRemove, currentSize]);
+    const moveSquare = () => {
+      setPosition((prev) => {
+        let newX = prev.x + direction.x * speed;
+        let newY = prev.y + direction.y * speed;
 
-  useEffect(() => {
-    animationFrameRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationFrameRef.current);
-  }, [animate]);
+        // Bounce off walls
+        if (newX + size > window.innerWidth || newX < 0) {
+          direction.x *= -1;
+          newX = prev.x + direction.x * speed;
+        }
+        if (newY + size > window.innerHeight || newY < 0) {
+          direction.y *= -1;
+          newY = prev.y + direction.y * speed;
+        }
 
-  return (
-    <div
-      style={{
-        position: "absolute",
-        top: `${position.y}px`,
-        left: `${position.x}px`,
-        width: `${currentSize}px`,
-        height: `${currentSize}px`,
-        backgroundColor: color,
-        borderRadius: "50%",
-        transform: "translate(-50%, -50%)",
-      }}
-    />
-  );
-});
+        return { x: newX, y: newY };
+      });
 
-const ParticleSystem = () => {
-  const [particles, setParticles] = useState([]);
-  const containerRef = useRef(null);
+      setRotation((prev) => (prev + 0.5) % 360);
 
-  const createParticle = useCallback((e) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const newParticle = {
+      // Stop and remove if the user gets bored
+      if (Math.random() < 0.0005) {
+        onRemove(id);
+      }
+
+      animationRef.current = requestAnimationFrame(moveSquare);
+    };
+
+    useEffect(() => {
+      animationRef.current = requestAnimationFrame(moveSquare);
+      return () => cancelAnimationFrame(animationRef.current);
+    }, [direction, speed, size, onRemove]);
+
+    return (
+      <div
+        style={{
+          position: "absolute",
+          top: `${position.y}px`,
+          left: `${position.x}px`,
+          width: `${size}px`,
+          height: `${size}px`,
+          backgroundColor: color,
+          transform: `rotate(${rotation}deg)`,
+          transition: "transform 0.1s linear",
+        }}
+      />
+    );
+  }
+);
+
+// The main component to manage all the squares
+const FloatingSquareGenerator = () => {
+  const [squares, setSquares] = useState([]);
+  const [isGenerating, setIsGenerating] = useState(true);
+  const generatorIntervalRef = useRef();
+
+  const addSquare = () => {
+    const newSquare = {
       id: Date.now() + Math.random(),
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-      color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-      size: Math.random() * 20 + 10,
-      velocity: {
-        x: (Math.random() - 0.5) * 4,
-        y: (Math.random() - 0.5) * 4,
+      size: Math.random() * 50 + 20,
+      speed: Math.random() * 1.5 + 0.5,
+      direction: {
+        x: Math.random() > 0.5 ? 1 : -1,
+        y: Math.random() > 0.5 ? 1 : -1,
       },
+      color: getRandomHsl(),
     };
-    setParticles((prev) => [...prev, newParticle]);
-  }, []);
+    setSquares((prev) => [...prev, newSquare]);
+  };
 
-  const removeParticle = useCallback((idToRemove) => {
-    setParticles((prev) => prev.filter((p) => p.id !== idToRemove));
-  }, []);
+  const removeSquare = (idToRemove) => {
+    setSquares((prev) => prev.filter((sq) => sq.id !== idToRemove));
+  };
 
   useEffect(() => {
-    const handleMouseLeave = () => {
-      setParticles([]);
-    };
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener("mouseleave", handleMouseLeave);
-      return () =>
-        container.removeEventListener("mouseleave", handleMouseLeave);
+    if (isGenerating) {
+      generatorIntervalRef.current = setInterval(addSquare, 500);
+    } else {
+      clearInterval(generatorIntervalRef.current);
     }
-  }, []);
+
+    return () => clearInterval(generatorIntervalRef.current);
+  }, [isGenerating]);
+
+  const toggleGeneration = () => {
+    setIsGenerating(!isGenerating);
+  };
+
+  const clearAllSquares = () => {
+    setSquares([]);
+  };
 
   return (
     <div
-      ref={containerRef}
-      className="particle-system-container"
-      onMouseMove={createParticle}
+      className="floating-square-container"
       style={{
         position: "relative",
         width: "100%",
         height: "100vh",
-        backgroundColor: "#000",
+        backgroundColor: "#333",
         overflow: "hidden",
       }}
     >
-      <div
-        style={{
-          color: "white",
-          fontSize: "2em",
-          textAlign: "center",
-          paddingTop: "20px",
-        }}
-      >
-        Move your mouse here!
+      <div style={{ position: "fixed", top: "10px", left: "10px", zIndex: 10 }}>
+        <button
+          onClick={toggleGeneration}
+          style={{ marginRight: "10px", padding: "10px" }}
+        >
+          {isGenerating ? "Stop Generating" : "Start Generating"}
+        </button>
+        <button onClick={clearAllSquares} style={{ padding: "10px" }}>
+          Clear All
+        </button>
       </div>
-      {particles.map((p) => (
-        <Particle
-          key={p.id}
-          id={p.id}
-          x={p.x}
-          y={p.y}
-          color={p.color}
-          size={p.size}
-          velocity={p.velocity}
-          onRemove={removeParticle}
+      {squares.map((sq) => (
+        <FloatingSquare
+          key={sq.id}
+          id={sq.id}
+          size={sq.size}
+          speed={sq.speed}
+          direction={sq.direction}
+          color={sq.color}
+          onRemove={removeSquare}
         />
       ))}
     </div>
   );
 };
 
-export default ParticleSystem;
+export default FloatingSquareGenerator;
