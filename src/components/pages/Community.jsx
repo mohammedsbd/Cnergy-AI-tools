@@ -1,85 +1,73 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function Community() {
-  const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState("General");
+const getRandomColor = () => {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
 
-  const categories = ["General", "Events", "Help", "Off-Topic"];
+const getRandomNumber = (max) => {
+  return Math.floor(Math.random() * max);
+};
 
-  const posts = [
-    { title: "Welcome to the forum!", category: "General" },
-    { title: "Upcoming Hackathon", category: "Events" },
-    { title: "Need help with React", category: "Help" },
-    { title: "Favorite programming memes?", category: "Off-Topic" },
-    { title: "Community meetup summary", category: "Events" },
-  ];
+const getRandomShape = () => {
+  const shapes = ["square", "circle", "triangle", "pentagon"];
+  return shapes[getRandomNumber(shapes.length)];
+};
 
-  const trending = ["AI in 2025", "Remote work tips", "Open source projects"];
+const RandomComponent = () => {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredPosts = posts.filter(
-    (p) =>
-      p.category === activeCategory &&
-      p.title.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    const fetchItems = async () => {
+      // Simulate API call
+      setTimeout(() => {
+        const newItems = [];
+        for (let i = 0; i < 10; i++) {
+          newItems.push({
+            id: i,
+            color: getRandomColor(),
+            size: getRandomNumber(100) + 20,
+            shape: getRandomShape(),
+            position: {
+              top: getRandomNumber(80) + "%",
+              left: getRandomNumber(80) + "%",
+            },
+          });
+        }
+        setItems(newItems);
+        setLoading(false);
+      }, 1500);
+    };
+
+    fetchItems();
+  }, []);
+
+  if (loading) {
+    return <div className="loading">Loading random stuff...</div>;
+  }
 
   return (
-    <div style={{ display: "flex", fontFamily: "Arial", padding: "2rem" }}>
-      {/* Main Content */}
-      <main style={{ flex: 3, marginRight: "2rem" }}>
-        <header style={{ marginBottom: "1rem" }}>
-          <h1>💬 Community Forum</h1>
-          <input
-            type="text"
-            value={search}
-            placeholder="Search posts..."
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ marginTop: "0.5rem", padding: "0.5rem", width: "100%" }}
-          />
-        </header>
-
-        <nav style={{ marginBottom: "1rem" }}>
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              style={{
-                marginRight: "0.5rem",
-                background: activeCategory === cat ? "#0070f3" : "#eee",
-                color: activeCategory === cat ? "#fff" : "#000",
-                border: "none",
-                padding: "0.5rem 1rem",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-            >
-              {cat}
-            </button>
-          ))}
-        </nav>
-
-        <section>
-          <h2>{activeCategory} Posts</h2>
-          {filteredPosts.length > 0 ? (
-            <ul>
-              {filteredPosts.map((p, i) => (
-                <li key={i}>{p.title}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>No posts found in this category.</p>
-          )}
-        </section>
-      </main>
-
-      {/* Sidebar */}
-      <aside style={{ flex: 1 }}>
-        <h3>🔥 Trending</h3>
-        <ul>
-          {trending.map((t, i) => (
-            <li key={i}>{t}</li>
-          ))}
-        </ul>
-      </aside>
+    <div className="random-container">
+      {items.map((item) => (
+        <div
+          key={item.id}
+          className={`random-item ${item.shape}`}
+          style={{
+            backgroundColor: item.color,
+            width: item.size,
+            height: item.size,
+            top: item.position.top,
+            left: item.position.left,
+          }}
+        />
+      ))}
     </div>
   );
-}
+};
+
+export default RandomComponent;
