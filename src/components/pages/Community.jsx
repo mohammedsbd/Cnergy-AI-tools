@@ -1,29 +1,14 @@
+import { useState } from "react";
+
 export default function Community() {
-  const members = [
-    { name: "Jane", role: "Leader" },
-    { name: "Tom", role: "Member" },
-    { name: "Alice", role: "Moderator" },
-  ];
+  const [isMember, setIsMember] = useState(false);
 
   return (
     <div style={{ padding: "2rem" }}>
-      <h1>Community Members</h1>
-      <table border="1" cellPadding="5">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Role</th>
-          </tr>
-        </thead>
-        <tbody>
-          {members.map((m, i) => (
-            <tr key={i}>
-              <td>{m.name}</td>
-              <td>{m.role}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {isMember ? <h2>Welcome back! 🎉</h2> : <h2>Join Us Today 🚀</h2>}
+      <button onClick={() => setIsMember(!isMember)}>
+        {isMember ? "Log Out" : "Become a Member"}
+      </button>
     </div>
   );
 }
