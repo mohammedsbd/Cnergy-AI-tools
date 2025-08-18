@@ -1,20 +1,20 @@
-import { useState } from "react";
-
 export default function Community() {
-  const quotes = [
-    "Alone we can do so little; together we can do so much.",
-    "Community is strength.",
-    "We rise by lifting others.",
+  const events = [
+    { title: "Workshop", date: "2025-08-20" },
+    { title: "Meetup", date: "2025-09-02" },
+    { title: "Hackathon", date: "2025-09-15" },
   ];
-  const [index, setIndex] = useState(0);
 
   return (
     <div style={{ padding: "2rem" }}>
-      <h1>Community Quotes</h1>
-      <blockquote>{quotes[index]}</blockquote>
-      <button onClick={() => setIndex((index + 1) % quotes.length)}>
-        Next Quote
-      </button>
+      <h1>Upcoming Events</h1>
+      <ul>
+        {events.map((e, i) => (
+          <li key={i}>
+            {e.title} — <strong>{e.date}</strong>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
