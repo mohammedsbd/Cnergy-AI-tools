@@ -1,49 +1,31 @@
-import { useState } from "react";
-
 export default function Community() {
-  const [filter, setFilter] = useState("all");
-
-  const events = [
-    { title: "Hackathon", date: "2025-09-01", type: "tech" },
-    { title: "Beach Cleanup", date: "2025-09-10", type: "environment" },
-    { title: "Networking Meetup", date: "2025-09-15", type: "social" },
+  const highlights = [
+    { title: "Mentorship", desc: "Learn from experienced mentors." },
+    { title: "Workshops", desc: "Gain new skills together." },
+    { title: "Networking", desc: "Meet professionals and peers." },
+    { title: "Hackathons", desc: "Innovate and build projects." },
   ];
-
-  const filtered =
-    filter === "all" ? events : events.filter((e) => e.type === filter);
 
   return (
     <div style={{ padding: "2rem" }}>
-      <h1>📅 Community Events</h1>
-
-      <div>
-        <label>Filter by type: </label>
-        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-          <option value="all">All</option>
-          <option value="tech">Tech</option>
-          <option value="environment">Environment</option>
-          <option value="social">Social</option>
-        </select>
+      <h1>🌟 Community Highlights</h1>
+      <div
+        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}
+      >
+        {highlights.map((h, i) => (
+          <div
+            key={i}
+            style={{
+              border: "1px solid #ccc",
+              borderRadius: "8px",
+              padding: "1rem",
+            }}
+          >
+            <h2>{h.title}</h2>
+            <p>{h.desc}</p>
+          </div>
+        ))}
       </div>
-
-      <table border="1" cellPadding="6" style={{ marginTop: "1rem" }}>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Date</th>
-            <th>Type</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filtered.map((ev, i) => (
-            <tr key={i}>
-              <td>{ev.title}</td>
-              <td>{ev.date}</td>
-              <td>{ev.type}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   );
 }
