@@ -1,14 +1,18 @@
-import { useState } from "react";
-
 export default function Community() {
-  const [isMember, setIsMember] = useState(false);
+  const stories = [
+    "Alice launched a coding workshop",
+    "Bob organized a community cleanup",
+    "Charlie hosted a networking event",
+  ];
 
   return (
     <div style={{ padding: "2rem" }}>
-      {isMember ? <h2>Welcome back! 🎉</h2> : <h2>Join Us Today 🚀</h2>}
-      <button onClick={() => setIsMember(!isMember)}>
-        {isMember ? "Log Out" : "Become a Member"}
-      </button>
+      <h1>Community Stories</h1>
+      {stories.map((s, i) => (
+        <article key={i} style={{ marginBottom: "1rem" }}>
+          <p>{s}</p>
+        </article>
+      ))}
     </div>
   );
 }
