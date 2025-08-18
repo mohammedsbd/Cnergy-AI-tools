@@ -1,36 +1,34 @@
-import { useState } from "react";
-
 export default function Community() {
-  const [role, setRole] = useState("all");
-
-  const members = [
-    { name: "Alice", role: "Admin" },
-    { name: "Bob", role: "Member" },
-    { name: "Charlie", role: "Moderator" },
-  ];
-
-  const filtered =
-    role === "all" ? members : members.filter((m) => m.role === role);
-
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>👥 Community Members</h1>
-      <label>
-        Filter:{" "}
-        <select value={role} onChange={(e) => setRole(e.target.value)}>
-          <option value="all">All</option>
-          <option value="Admin">Admin</option>
-          <option value="Member">Member</option>
-          <option value="Moderator">Moderator</option>
-        </select>
-      </label>
-      <ul>
-        {filtered.map((m, i) => (
-          <li key={i}>
-            {m.name} — {m.role}
-          </li>
-        ))}
-      </ul>
+    <div style={{ fontFamily: "Arial", padding: "2rem" }}>
+      <header style={{ marginBottom: "2rem" }}>
+        <h1>🌍 Community Platform</h1>
+        <nav>
+          <a href="/home">Home</a> | <a href="/about">About</a> |{" "}
+          <a href="/events">Events</a>
+        </nav>
+      </header>
+
+      <section style={{ marginBottom: "2rem" }}>
+        <h2>About Us</h2>
+        <p>
+          Our mission is to bring people together, share knowledge, and build a
+          better future through collaboration.
+        </p>
+      </section>
+
+      <section style={{ marginBottom: "2rem" }}>
+        <h2>Our Core Values</h2>
+        <ul>
+          <li>🤝 Respect</li>
+          <li>💡 Innovation</li>
+          <li>🌱 Growth</li>
+        </ul>
+      </section>
+
+      <footer style={{ textAlign: "center", color: "#666" }}>
+        <p>© 2025 Global Community</p>
+      </footer>
     </div>
   );
 }
