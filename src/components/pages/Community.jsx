@@ -1,145 +1,146 @@
 import React, { useState, useEffect, useRef } from "react";
 
-// Utility function to generate a random HSL color
-const getRandomHsl = () => `hsl(${Math.random() * 360}, 70%, 50%)`;
+// Main component: A simple chat interface
+const ChatRoom = () => {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const chatEndRef = useRef(null);
 
-// A single floating square component
-const FloatingSquare = React.memo(
-  ({ id, size, speed, direction, color, onRemove }) => {
-    const [position, setPosition] = useState({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-    });
-    const [rotation, setRotation] = useState(0);
-    const animationRef = useRef();
-
-    const moveSquare = () => {
-      setPosition((prev) => {
-        let newX = prev.x + direction.x * speed;
-        let newY = prev.y + direction.y * speed;
-
-        // Bounce off walls
-        if (newX + size > window.innerWidth || newX < 0) {
-          direction.x *= -1;
-          newX = prev.x + direction.x * speed;
-        }
-        if (newY + size > window.innerHeight || newY < 0) {
-          direction.y *= -1;
-          newY = prev.y + direction.y * speed;
-        }
-
-        return { x: newX, y: newY };
-      });
-
-      setRotation((prev) => (prev + 0.5) % 360);
-
-      // Stop and remove if the user gets bored
-      if (Math.random() < 0.0005) {
-        onRemove(id);
-      }
-
-      animationRef.current = requestAnimationFrame(moveSquare);
-    };
-
-    useEffect(() => {
-      animationRef.current = requestAnimationFrame(moveSquare);
-      return () => cancelAnimationFrame(animationRef.current);
-    }, [direction, speed, size, onRemove]);
-
-    return (
-      <div
-        style={{
-          position: "absolute",
-          top: `${position.y}px`,
-          left: `${position.x}px`,
-          width: `${size}px`,
-          height: `${size}px`,
-          backgroundColor: color,
-          transform: `rotate(${rotation}deg)`,
-          transition: "transform 0.1s linear",
-        }}
-      />
-    );
-  }
-);
-
-// The main component to manage all the squares
-const FloatingSquareGenerator = () => {
-  const [squares, setSquares] = useState([]);
-  const [isGenerating, setIsGenerating] = useState(true);
-  const generatorIntervalRef = useRef();
-
-  const addSquare = () => {
-    const newSquare = {
-      id: Date.now() + Math.random(),
-      size: Math.random() * 50 + 20,
-      speed: Math.random() * 1.5 + 0.5,
-      direction: {
-        x: Math.random() > 0.5 ? 1 : -1,
-        y: Math.random() > 0.5 ? 1 : -1,
-      },
-      color: getRandomHsl(),
-    };
-    setSquares((prev) => [...prev, newSquare]);
+  // Auto-scroll to the bottom of the chat window
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const removeSquare = (idToRemove) => {
-    setSquares((prev) => prev.filter((sq) => sq.id !== idToRemove));
+  // Simulate a bot response
+  const handleBotResponse = (userMessage) => {
+    const responses = {
+      hello: "Hello there! How can I help you today?",
+      "how are you?": "I'm a bot, but I'm doing great! Thanks for asking.",
+      "what is react?":
+        "React is a JavaScript library for building user interfaces.",
+      bye: "Goodbye! Have a great day!",
+    };
+    const botReply =
+      responses[userMessage.toLowerCase()] ||
+      "I'm not sure how to respond to that.";
+
+    setTimeout(() => {
+      setMessages((prev) => [...prev, { sender: "bot", text: botReply }]);
+      scrollToBottom();
+    }, 500);
+  };
+
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (input.trim() === "") return;
+
+    const userMessage = input.trim();
+    setMessages((prev) => [...prev, { sender: "user", text: userMessage }]);
+    setInput("");
+
+    handleBotResponse(userMessage);
   };
 
   useEffect(() => {
-    if (isGenerating) {
-      generatorIntervalRef.current = setInterval(addSquare, 500);
-    } else {
-      clearInterval(generatorIntervalRef.current);
-    }
-
-    return () => clearInterval(generatorIntervalRef.current);
-  }, [isGenerating]);
-
-  const toggleGeneration = () => {
-    setIsGenerating(!isGenerating);
-  };
-
-  const clearAllSquares = () => {
-    setSquares([]);
-  };
+    scrollToBottom();
+  }, [messages]);
 
   return (
-    <div
-      className="floating-square-container"
-      style={{
-        position: "relative",
-        width: "100%",
-        height: "100vh",
-        backgroundColor: "#333",
-        overflow: "hidden",
-      }}
-    >
-      <div style={{ position: "fixed", top: "10px", left: "10px", zIndex: 10 }}>
-        <button
-          onClick={toggleGeneration}
-          style={{ marginRight: "10px", padding: "10px" }}
-        >
-          {isGenerating ? "Stop Generating" : "Start Generating"}
-        </button>
-        <button onClick={clearAllSquares} style={{ padding: "10px" }}>
-          Clear All
-        </button>
+    <div className="chat-container">
+      <h2>Simple Bot Chat</h2>
+      <div className="message-list">
+        {messages.map((msg, index) => (
+          <div key={index} className={`message ${msg.sender}`}>
+            <span className="sender-name">
+              {msg.sender === "user" ? "You" : "Bot"}:
+            </span>
+            <div className="message-bubble">{msg.text}</div>
+          </div>
+        ))}
+        <div ref={chatEndRef} />
       </div>
-      {squares.map((sq) => (
-        <FloatingSquare
-          key={sq.id}
-          id={sq.id}
-          size={sq.size}
-          speed={sq.speed}
-          direction={sq.direction}
-          color={sq.color}
-          onRemove={removeSquare}
+      <form onSubmit={handleSendMessage} className="message-form">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Type a message..."
         />
-      ))}
+        <button type="submit">Send</button>
+      </form>
+      <style jsx>{`
+        .chat-container {
+          display: flex;
+          flex-direction: column;
+          width: 400px;
+          height: 500px;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          overflow: hidden;
+          margin: 20px auto;
+        }
+        .message-list {
+          flex-grow: 1;
+          padding: 10px;
+          overflow-y: auto;
+          background-color: #f0f0f0;
+        }
+        .message {
+          display: flex;
+          margin-bottom: 10px;
+          align-items: flex-end;
+        }
+        .message.user {
+          justify-content: flex-end;
+        }
+        .message.bot {
+          justify-content: flex-start;
+        }
+        .message-bubble {
+          padding: 8px 12px;
+          border-radius: 20px;
+          max-width: 70%;
+          line-height: 1.4;
+        }
+        .message.user .message-bubble {
+          background-color: #007bff;
+          color: white;
+        }
+        .message.bot .message-bubble {
+          background-color: #e2e2e2;
+          color: #333;
+        }
+        .sender-name {
+          font-weight: bold;
+          font-size: 0.8em;
+          margin-right: 5px;
+        }
+        .message.user .sender-name {
+          display: none;
+        }
+        .message-form {
+          display: flex;
+          padding: 10px;
+          border-top: 1px solid #ccc;
+        }
+        .message-form input {
+          flex-grow: 1;
+          padding: 8px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+        }
+        .message-form button {
+          margin-left: 10px;
+          padding: 8px 12px;
+          background-color: #007bff;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+      `}</style>
     </div>
   );
 };
 
-export default FloatingSquareGenerator;
+export default ChatRoom;
