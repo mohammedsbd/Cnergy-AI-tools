@@ -1,96 +1,85 @@
 import { useState } from "react";
 
 export default function Community() {
-  const [subscribed, setSubscribed] = useState(false);
-  const [email, setEmail] = useState("");
+  const [search, setSearch] = useState("");
+  const [activeCategory, setActiveCategory] = useState("General");
 
-  const announcements = [
-    "🎉 Welcome our 200th member!",
-    "📢 Hackathon registration is open!",
-    "🚀 New mentorship program launching soon!",
+  const categories = ["General", "Events", "Help", "Off-Topic"];
+
+  const posts = [
+    { title: "Welcome to the forum!", category: "General" },
+    { title: "Upcoming Hackathon", category: "Events" },
+    { title: "Need help with React", category: "Help" },
+    { title: "Favorite programming memes?", category: "Off-Topic" },
+    { title: "Community meetup summary", category: "Events" },
   ];
 
-  const events = [
-    { title: "AI Workshop", date: "2025-09-05" },
-    { title: "Community Meetup", date: "2025-09-12" },
-    { title: "Charity Fundraiser", date: "2025-09-20" },
-  ];
+  const trending = ["AI in 2025", "Remote work tips", "Open source projects"];
 
-  const members = ["Alice", "Bob", "Charlie", "Diana", "Ethan"];
-
-  const subscribe = (e) => {
-    e.preventDefault();
-    if (email.trim()) {
-      setSubscribed(true);
-      setEmail("");
-    }
-  };
+  const filteredPosts = posts.filter(
+    (p) =>
+      p.category === activeCategory &&
+      p.title.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div
-      style={{
-        fontFamily: "Arial",
-        padding: "2rem",
-        maxWidth: "800px",
-        margin: "auto",
-      }}
-    >
-      <header style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <h1>🌍 Community Portal</h1>
-        <p>Connect. Learn. Grow together.</p>
-      </header>
+    <div style={{ display: "flex", fontFamily: "Arial", padding: "2rem" }}>
+      {/* Main Content */}
+      <main style={{ flex: 3, marginRight: "2rem" }}>
+        <header style={{ marginBottom: "1rem" }}>
+          <h1>💬 Community Forum</h1>
+          <input
+            type="text"
+            value={search}
+            placeholder="Search posts..."
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ marginTop: "0.5rem", padding: "0.5rem", width: "100%" }}
+          />
+        </header>
 
-      <section style={{ marginBottom: "2rem" }}>
-        <h2>📢 Announcements</h2>
+        <nav style={{ marginBottom: "1rem" }}>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              style={{
+                marginRight: "0.5rem",
+                background: activeCategory === cat ? "#0070f3" : "#eee",
+                color: activeCategory === cat ? "#fff" : "#000",
+                border: "none",
+                padding: "0.5rem 1rem",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              {cat}
+            </button>
+          ))}
+        </nav>
+
+        <section>
+          <h2>{activeCategory} Posts</h2>
+          {filteredPosts.length > 0 ? (
+            <ul>
+              {filteredPosts.map((p, i) => (
+                <li key={i}>{p.title}</li>
+              ))}
+            </ul>
+          ) : (
+            <p>No posts found in this category.</p>
+          )}
+        </section>
+      </main>
+
+      {/* Sidebar */}
+      <aside style={{ flex: 1 }}>
+        <h3>🔥 Trending</h3>
         <ul>
-          {announcements.map((a, i) => (
-            <li key={i}>{a}</li>
+          {trending.map((t, i) => (
+            <li key={i}>{t}</li>
           ))}
         </ul>
-      </section>
-
-      <section style={{ marginBottom: "2rem" }}>
-        <h2>📅 Upcoming Events</h2>
-        <ul>
-          {events.map((e, i) => (
-            <li key={i}>
-              {e.title} — <strong>{e.date}</strong>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section style={{ marginBottom: "2rem" }}>
-        <h2>👥 Members</h2>
-        <p>Total members: {members.length}</p>
-        <ul>
-          {members.map((m, i) => (
-            <li key={i}>{m}</li>
-          ))}
-        </ul>
-      </section>
-
-      <section style={{ marginBottom: "2rem" }}>
-        <h2>📧 Newsletter Signup</h2>
-        {subscribed ? (
-          <p>✅ Thanks for subscribing!</p>
-        ) : (
-          <form onSubmit={subscribe}>
-            <input
-              type="email"
-              value={email}
-              placeholder="Enter your email"
-              onChange={(e) => setEmail(e.target.value)}
-              style={{ marginRight: "1rem" }}
-            />
-            <button type="submit">Subscribe</button>
-          </form>
-        )}
-      </section>
-
-      <footer style={{ textAlign: "center", color: "#666" }}>
-        <p>© 2025 Community Portal. All rights reserved.</p>
-      </footer>
+      </aside>
     </div>
   );
 }
