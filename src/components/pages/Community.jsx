@@ -1,93 +1,119 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 
-const colors = [
-  "#FF6347",
-  "#4682B4",
-  "#32CD32",
-  "#FFD700",
-  "#BA55D3",
-  "#00CED1",
-];
+const Particle = React.memo(({ id, x, y, color, size, velocity, onRemove }) => {
+  const [position, setPosition] = useState({ x, y });
+  const [currentSize, setCurrentSize] = useState(size);
+  const animationFrameRef = useRef();
 
-const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
+  const animate = useCallback(() => {
+    setPosition((prev) => ({
+      x: prev.x + velocity.x,
+      y: prev.y + velocity.y,
+    }));
+    setCurrentSize((prev) => (prev > 0.1 ? prev - 0.1 : 0));
 
-const MovingBox = ({ id, onRemove }) => {
-  const [position, setPosition] = useState({ top: 0, left: 0 });
-  const [color, setColor] = useState(getRandomColor());
-  const [speed] = useState(Math.random() * 2 + 1); // Random speed between 1 and 3
+    if (currentSize > 0.1) {
+      animationFrameRef.current = requestAnimationFrame(animate);
+    } else {
+      onRemove(id);
+    }
+  }, [id, velocity, onRemove, currentSize]);
 
   useEffect(() => {
-    const moveBox = () => {
-      setPosition((prev) => {
-        const newLeft = prev.left + speed;
-        if (newLeft > window.innerWidth) {
-          onRemove(id);
-        }
-        return { top: prev.top, left: newLeft };
-      });
-    };
-
-    const interval = setInterval(moveBox, 20); // Move every 20ms
-
-    return () => clearInterval(interval);
-  }, [speed, id, onRemove]);
+    animationFrameRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrameRef.current);
+  }, [animate]);
 
   return (
     <div
       style={{
         position: "absolute",
-        top: `${position.top}px`,
-        left: `${position.left}px`,
-        width: "50px",
-        height: "50px",
+        top: `${position.y}px`,
+        left: `${position.x}px`,
+        width: `${currentSize}px`,
+        height: `${currentSize}px`,
         backgroundColor: color,
-        border: "2px solid black",
-        borderRadius: "8px",
+        borderRadius: "50%",
+        transform: "translate(-50%, -50%)",
       }}
     />
   );
-};
+});
 
-const BoxGenerator = () => {
-  const [boxes, setBoxes] = useState([]);
+const ParticleSystem = () => {
+  const [particles, setParticles] = useState([]);
+  const containerRef = useRef(null);
 
-  useEffect(() => {
-    const createBox = () => {
-      const newBox = {
-        id: Date.now() + Math.random(),
-        initialPosition: {
-          top: Math.random() * (window.innerHeight - 50),
-          left: -50, // Start off-screen to the left
-        },
-      };
-      setBoxes((prev) => [...prev, newBox]);
+  const createParticle = useCallback((e) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const newParticle = {
+      id: Date.now() + Math.random(),
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+      color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+      size: Math.random() * 20 + 10,
+      velocity: {
+        x: (Math.random() - 0.5) * 4,
+        y: (Math.random() - 0.5) * 4,
+      },
     };
-
-    const interval = setInterval(createBox, 1000); // Create a new box every second
-
-    return () => clearInterval(interval);
+    setParticles((prev) => [...prev, newParticle]);
   }, []);
 
-  const handleRemoveBox = (idToRemove) => {
-    setBoxes((prev) => prev.filter((box) => box.id !== idToRemove));
-  };
+  const removeParticle = useCallback((idToRemove) => {
+    setParticles((prev) => prev.filter((p) => p.id !== idToRemove));
+  }, []);
+
+  useEffect(() => {
+    const handleMouseLeave = () => {
+      setParticles([]);
+    };
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("mouseleave", handleMouseLeave);
+      return () =>
+        container.removeEventListener("mouseleave", handleMouseLeave);
+    }
+  }, []);
 
   return (
     <div
-      className="box-container"
+      ref={containerRef}
+      className="particle-system-container"
+      onMouseMove={createParticle}
       style={{
         position: "relative",
         width: "100%",
         height: "100vh",
+        backgroundColor: "#000",
         overflow: "hidden",
       }}
     >
-      <h1>Random Box Generator</h1>
-      {boxes.map((box) => (
-        <MovingBox key={box.id} id={box.id} onRemove={handleRemoveBox} />
+      <div
+        style={{
+          color: "white",
+          fontSize: "2em",
+          textAlign: "center",
+          paddingTop: "20px",
+        }}
+      >
+        Move your mouse here!
+      </div>
+      {particles.map((p) => (
+        <Particle
+          key={p.id}
+          id={p.id}
+          x={p.x}
+          y={p.y}
+          color={p.color}
+          size={p.size}
+          velocity={p.velocity}
+          onRemove={removeParticle}
+        />
       ))}
     </div>
   );
 };
 
-export default BoxGenerator;
+export default ParticleSystem;
