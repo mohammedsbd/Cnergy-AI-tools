@@ -1,109 +1,104 @@
 import React, { useState, useEffect, useRef } from "react";
 
-// Utility function to generate a random number within a range
-const getRandomNumber = (min, max) =>
-  Math.floor(Math.random() * (max - min + 1)) + min;
+// Main component for the task board
+const KanbanBoard = () => {
+  const [columns, setColumns] = useState({
+    todo: {
+      title: "To Do",
+      tasks: [
+        { id: "1", content: "Set up project" },
+        { id: "2", content: "Create components" },
+        { id: "3", content: "Define state" },
+      ],
+    },
+    "in-progress": {
+      title: "In Progress",
+      tasks: [{ id: "4", content: "Implement drag-and-drop" }],
+    },
+    done: {
+      title: "Done",
+      tasks: [{ id: "5", content: "Initial layout" }],
+    },
+  });
 
-// A simple star component
-const Star = ({ id, x, y, size, opacity, color, onRemove }) => {
-  const [currentOpacity, setCurrentOpacity] = useState(opacity);
-  const [currentSize, setCurrentSize] = useState(size);
-  const animationRef = useRef();
+  const [draggedItem, setDraggedItem] = useState(null);
+  const [sourceColumnId, setSourceColumnId] = useState(null);
 
-  const animate = () => {
-    setCurrentOpacity((prev) => (prev > 0.05 ? prev - 0.01 : 0));
-    setCurrentSize((prev) => (prev > 0.5 ? prev - 0.1 : 0));
+  const handleDragStart = (e, taskId, columnId) => {
+    setDraggedItem(taskId);
+    setSourceColumnId(columnId);
+    e.dataTransfer.effectAllowed = "move";
+  };
 
-    if (currentOpacity > 0.05) {
-      animationRef.current = requestAnimationFrame(animate);
-    } else {
-      onRemove(id);
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e, destinationColumnId) => {
+    e.preventDefault();
+    if (!draggedItem || sourceColumnId === destinationColumnId) {
+      return;
     }
-  };
 
-  useEffect(() => {
-    animationRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationRef.current);
-  }, [animate]);
+    const sourceColumn = columns[sourceColumnId];
+    const destinationColumn = columns[destinationColumnId];
+    const draggedTask = sourceColumn.tasks.find(
+      (task) => task.id === draggedItem
+    );
 
-  return (
-    <div
-      style={{
-        position: "absolute",
-        left: `${x}px`,
-        top: `${y}px`,
-        width: `${currentSize}px`,
-        height: `${currentSize}px`,
-        backgroundColor: color,
-        borderRadius: "50%",
-        opacity: currentOpacity,
-        transform: "translate(-50%, -50%)",
-      }}
-    />
-  );
-};
+    if (!draggedTask) return;
 
-// Main component: Galaxy Emitter
-const GalaxyEmitter = () => {
-  const [stars, setStars] = useState([]);
-  const containerRef = useRef(null);
+    // Remove the task from the source column
+    const newSourceTasks = sourceColumn.tasks.filter(
+      (task) => task.id !== draggedItem
+    );
 
-  const createStar = (e) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const newStar = {
-      id: Date.now() + Math.random(),
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-      size: getRandomNumber(1, 4),
-      opacity: Math.random() * 0.5 + 0.5,
-      color: "white",
-    };
-    setStars((prevStars) => [...prevStars, newStar]);
-  };
+    // Add the task to the destination column
+    const newDestinationTasks = [...destinationColumn.tasks, draggedTask];
 
-  const removeStar = (id) => {
-    setStars((prevStars) => prevStars.filter((s) => s.id !== id));
+    setColumns({
+      ...columns,
+      [sourceColumnId]: { ...sourceColumn, tasks: newSourceTasks },
+      [destinationColumnId]: {
+        ...destinationColumn,
+        tasks: newDestinationTasks,
+      },
+    });
+
+    // Reset drag state
+    setDraggedItem(null);
+    setSourceColumnId(null);
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="galaxy-container"
-      onMouseMove={createStar}
-      style={{
-        position: "relative",
-        width: "100%",
-        height: "100vh",
-        backgroundColor: "#000",
-        overflow: "hidden",
-      }}
-    >
-      <div
-        style={{
-          color: "white",
-          fontSize: "2em",
-          textAlign: "center",
-          paddingTop: "20px",
-          opacity: 0.8,
-        }}
-      >
-        🌌 Move your mouse to see a galaxy! 💫
+    <div className="kanban-board-container">
+      <h2>Kanban Task Board</h2>
+      <div className="kanban-board">
+        {Object.entries(columns).map(([columnId, column]) => (
+          <div
+            key={columnId}
+            className="kanban-column"
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, columnId)}
+          >
+            <h3>{column.title}</h3>
+            <div className="task-list">
+              {column.tasks.map((task) => (
+                <div
+                  key={task.id}
+                  className="task-card"
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, task.id, columnId)}
+                >
+                  {task.content}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
-      {stars.map((s) => (
-        <Star
-          key={s.id}
-          id={s.id}
-          x={s.x}
-          y={s.y}
-          size={s.size}
-          opacity={s.opacity}
-          color={s.color}
-          onRemove={removeStar}
-        />
-      ))}
     </div>
   );
 };
 
-export default GalaxyEmitter;
+export default KanbanBoard;
