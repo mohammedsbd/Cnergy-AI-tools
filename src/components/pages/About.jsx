@@ -1,28 +1,25 @@
-import React, { useState } from "react";
+import React from "react";
 
-const quotes = [
-  "Artificial intelligence is the new electricity.",
-  "The future belongs to those who harness AI.",
-  "Machine learning is intelligence applied.",
+const sessions = [
+  { time: "09:00 AM", topic: "Opening Keynote", speaker: "Dr. Smith" },
+  { time: "11:00 AM", topic: "AI in Healthcare", speaker: "Prof. Lee" },
+  { time: "02:00 PM", topic: "Future of Robotics", speaker: "Dr. Patel" },
 ];
 
-export default function AIQuoteGenerator() {
-  const [quote, setQuote] = useState(quotes[0]);
-
-  const generate = () => {
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    setQuote(quotes[randomIndex]);
-  };
-
+export default function AIConferenceSchedule() {
   return (
-    <div className="flex flex-col items-center justify-center h-64">
-      <blockquote className="italic text-lg mb-4">“{quote}”</blockquote>
-      <button
-        onClick={generate}
-        className="px-4 py-2 bg-indigo-600 text-white rounded"
-      >
-        New Quote
-      </button>
-    </div>
+    <section className="max-w-lg mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-4">AI Conference Schedule</h1>
+      <ul className="space-y-4">
+        {sessions.map((s, i) => (
+          <li key={i} className="p-4 bg-gray-50 border rounded shadow-sm">
+            <h2 className="text-lg font-semibold">{s.topic}</h2>
+            <p className="text-sm text-gray-600">
+              {s.time} · {s.speaker}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
