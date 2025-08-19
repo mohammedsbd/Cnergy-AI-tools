@@ -1,34 +1,53 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-export default function WeatherCard() {
-  const [weather, setWeather] = useState(null);
+const images = [
+  "https://picsum.photos/id/1011/400/200",
+  "https://picsum.photos/id/1015/400/200",
+  "https://picsum.photos/id/1016/400/200",
+];
 
-  useEffect(() => {
-    // Simulate fetching weather
-    const timer = setTimeout(() => {
-      setWeather({
-        city: "New York",
-        temp: 23,
-        condition: "Sunny",
-        humidity: 60,
-      });
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+export default function Carousel() {
+  const [index, setIndex] = useState(0);
+
+  const next = () => {
+    setIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prev = () => {
+    setIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
 
   return (
-    <div className="max-w-sm mx-auto mt-6 p-4 border rounded-lg shadow">
-      <h2 className="text-lg font-semibold mb-2">Weather Info</h2>
-      {!weather ? (
-        <p>Loading...</p>
-      ) : (
-        <div>
-          <h3 className="text-xl">{weather.city}</h3>
-          <p className="text-2xl">{weather.temp}°C</p>
-          <p className="capitalize">{weather.condition}</p>
-          <p className="text-sm text-gray-500">Humidity: {weather.humidity}%</p>
-        </div>
-      )}
+    <div className="flex flex-col items-center mt-6">
+      <div className="relative w-96 h-52 overflow-hidden border rounded-lg">
+        <img
+          src={images[index]}
+          alt="carousel"
+          className="w-full h-full object-cover"
+        />
+        <button
+          onClick={prev}
+          className="absolute left-2 top-1/2 bg-white px-2 rounded shadow"
+        >
+          {"<"}
+        </button>
+        <button
+          onClick={next}
+          className="absolute right-2 top-1/2 bg-white px-2 rounded shadow"
+        >
+          {">"}
+        </button>
+      </div>
+      <div className="flex gap-2 mt-3">
+        {images.map((_, i) => (
+          <span
+            key={i}
+            className={`w-3 h-3 rounded-full ${
+              i === index ? "bg-blue-600" : "bg-gray-400"
+            }`}
+          />
+        ))}
+      </div>
     </div>
   );
 }
