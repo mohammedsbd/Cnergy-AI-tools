@@ -1,22 +1,74 @@
-import React, { useState } from "react";
+// A simple to-do list application for the command line.
 
-export default function ThemeSwitcher() {
-  const [theme, setTheme] = useState("light");
+// An array to hold our to-do items. Each item is an object.
+let todoList = [];
 
-  return (
-    <div
-      className={`min-h-screen flex flex-col items-center justify-center ${
-        theme === "dark" ? "bg-black text-white" : "bg-white text-black"
-      }`}
-    >
-      <h1 className="text-2xl font-bold mb-4">Theme Switcher</h1>
-      <button
-        onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-        className="px-4 py-2 bg-blue-600 text-white rounded"
-      >
-        Toggle Theme
-      </button>
-      <p className="mt-3">Current theme: {theme}</p>
-    </div>
-  );
+// A function to add a new to-do item.
+function addTodo(task) {
+  // We'll give each task a unique ID and a status.
+  const newItem = {
+    id: todoList.length + 1,
+    task: task,
+    isCompleted: false,
+  };
+  todoList.push(newItem);
+  console.log(`Task "${task}" has been added. ID: ${newItem.id}`);
 }
+
+// A function to display all to-do items.
+function viewTodos() {
+  if (todoList.length === 0) {
+    console.log("Your to-do list is empty! ✅");
+    return;
+  }
+  console.log("\n--- Your To-Do List ---");
+  todoList.forEach((item) => {
+    const status = item.isCompleted ? "✅ (Completed)" : "⏳ (Pending)";
+    console.log(`ID: ${item.id} | Task: ${item.task} | Status: ${status}`);
+  });
+  console.log("-----------------------");
+}
+
+// A function to mark an item as completed.
+function completeTodo(id) {
+  const item = todoList.find((todo) => todo.id === id);
+  if (item) {
+    item.isCompleted = true;
+    console.log(`Task ID ${id} has been marked as completed. 🎉`);
+  } else {
+    console.log(`Error: Task with ID ${id} not found.`);
+  }
+}
+
+// A function to remove a to-do item.
+function removeTodo(id) {
+  const initialLength = todoList.length;
+  todoList = todoList.filter((todo) => todo.id !== id);
+  if (todoList.length < initialLength) {
+    console.log(`Task ID ${id} has been removed. 🗑️`);
+  } else {
+    console.log(`Error: Task with ID ${id} not found.`);
+  }
+}
+
+// Let's add a few tasks to start.
+addTodo("Learn JavaScript basics");
+addTodo("Build a small project");
+addTodo("Read about ES6 features");
+
+// Now let's view the list.
+viewTodos();
+
+// Let's complete one of the tasks.
+completeTodo(2);
+
+// Let's view the list again to see the change.
+viewTodos();
+
+// Let's remove a task.
+removeTodo(1);
+
+// And view the final list.
+viewTodos();
+
+console.log("\nApplication finished. 👋");
