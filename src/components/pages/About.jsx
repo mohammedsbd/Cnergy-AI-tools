@@ -1,46 +1,23 @@
 import React, { useState } from "react";
 
-const products = [
-  { id: 1, name: "Laptop", price: 999 },
-  { id: 2, name: "Headphones", price: 199 },
-  { id: 3, name: "Keyboard", price: 89 },
-];
-
-export default function ShoppingCart() {
-  const [cart, setCart] = useState([]);
-
-  const addToCart = (product) => {
-    setCart([...cart, product]);
-  };
-
-  const total = cart.reduce((sum, item) => sum + item.price, 0);
+export default function MarkdownPreview() {
+  const [text, setText] = useState("**Hello World**");
 
   return (
     <div className="p-4 max-w-lg mx-auto">
-      <h1 className="text-xl font-bold mb-3">Shop</h1>
-      <div className="grid grid-cols-2 gap-4">
-        {products.map((p) => (
-          <div key={p.id} className="border p-3 rounded">
-            <h2>{p.name}</h2>
-            <p>${p.price}</p>
-            <button
-              onClick={() => addToCart(p)}
-              className="bg-blue-500 text-white px-2 py-1 mt-2 rounded"
-            >
-              Add
-            </button>
-          </div>
-        ))}
-      </div>
-      <h2 className="text-lg font-semibold mt-4">Cart</h2>
-      <ul>
-        {cart.map((item, i) => (
-          <li key={i}>
-            {item.name} - ${item.price}
-          </li>
-        ))}
-      </ul>
-      <p className="font-bold mt-2">Total: ${total}</p>
+      <h1 className="text-xl font-bold mb-3">Markdown Preview</h1>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        className="w-full h-32 border p-2"
+      />
+      <h2 className="mt-4 font-semibold">Preview:</h2>
+      <div
+        className="border p-3 mt-2"
+        dangerouslySetInnerHTML={{
+          __html: text.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>"),
+        }}
+      />
     </div>
   );
 }
