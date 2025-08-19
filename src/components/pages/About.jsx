@@ -1,36 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-const papers = [
-  { title: "Transformers in Vision", year: 2023, link: "#" },
-  { title: "Reinforcement Learning Advances", year: 2024, link: "#" },
-  { title: "Neural Symbolic AI", year: 2025, link: "#" },
-];
+export default function AINewsFeed() {
+  const [articles, setArticles] = useState([]);
 
-export default function AIResearchPapers() {
+  useEffect(() => {
+    setArticles([
+      { headline: "AI beats human champions in strategy games" },
+      { headline: "New model predicts protein folding accurately" },
+      { headline: "Robotics powered by generative AI unveiled" },
+    ]);
+  }, []);
+
   return (
-    <section className="max-w-4xl mx-auto p-6">
-      <header className="mb-4">
-        <h1 className="text-2xl font-bold">Latest AI Research Papers</h1>
-        <p className="text-gray-600">
-          Browse recent publications in artificial intelligence.
-        </p>
-      </header>
-      <ul className="space-y-3">
-        {papers.map((p, i) => (
-          <li
-            key={i}
-            className="flex justify-between items-center border p-3 rounded"
-          >
-            <div>
-              <h2 className="text-lg font-semibold">{p.title}</h2>
-              <span className="text-sm text-gray-500">Published: {p.year}</span>
-            </div>
-            <a href={p.link} className="text-blue-600 hover:underline">
-              Download
-            </a>
-          </li>
+    <div className="max-w-3xl mx-auto p-6 bg-gray-100 rounded-lg">
+      <h1 className="text-xl font-bold mb-4">AI News Feed</h1>
+      <div className="space-y-3">
+        {articles.map((a, i) => (
+          <article key={i} className="p-3 bg-white shadow rounded">
+            <h2>{a.headline}</h2>
+          </article>
         ))}
-      </ul>
-    </section>
+      </div>
+    </div>
   );
 }
