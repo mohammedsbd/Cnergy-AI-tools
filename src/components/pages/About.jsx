@@ -1,33 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 
-const models = [
-  { name: "GPT-4", speed: "Fast", accuracy: "92%" },
-  { name: "BERT", speed: "Medium", accuracy: "89%" },
-  { name: "LLaMA", speed: "Variable", accuracy: "87%" },
+const quotes = [
+  "Artificial intelligence is the new electricity.",
+  "The future belongs to those who harness AI.",
+  "Machine learning is intelligence applied.",
 ];
 
-export default function AIModelComparison() {
+export default function AIQuoteGenerator() {
+  const [quote, setQuote] = useState(quotes[0]);
+
+  const generate = () => {
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    setQuote(quotes[randomIndex]);
+  };
+
   return (
-    <div className="overflow-x-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">AI Model Comparison</h1>
-      <table className="w-full border-collapse border">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="border p-2">Model</th>
-            <th className="border p-2">Speed</th>
-            <th className="border p-2">Accuracy</th>
-          </tr>
-        </thead>
-        <tbody>
-          {models.map((m, i) => (
-            <tr key={i} className="text-center">
-              <td className="border p-2">{m.name}</td>
-              <td className="border p-2">{m.speed}</td>
-              <td className="border p-2">{m.accuracy}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="flex flex-col items-center justify-center h-64">
+      <blockquote className="italic text-lg mb-4">“{quote}”</blockquote>
+      <button
+        onClick={generate}
+        className="px-4 py-2 bg-indigo-600 text-white rounded"
+      >
+        New Quote
+      </button>
     </div>
   );
 }
