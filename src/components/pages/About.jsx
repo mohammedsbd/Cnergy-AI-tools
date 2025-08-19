@@ -1,23 +1,46 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-export default function DarkModeToggle() {
-  const [dark, setDark] = useState(false);
+const products = [
+  { id: 1, name: "Laptop", price: 999 },
+  { id: 2, name: "Headphones", price: 199 },
+  { id: 3, name: "Keyboard", price: 89 },
+];
 
-  useEffect(() => {
-    document.body.className = dark
-      ? "bg-black text-white"
-      : "bg-white text-black";
-  }, [dark]);
+export default function ShoppingCart() {
+  const [cart, setCart] = useState([]);
+
+  const addToCart = (product) => {
+    setCart([...cart, product]);
+  };
+
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
 
   return (
-    <div className="flex flex-col items-center mt-6 space-y-3">
-      <h1 className="text-xl font-bold">Dark Mode Toggle</h1>
-      <button
-        onClick={() => setDark((d) => !d)}
-        className="px-4 py-2 rounded bg-gray-700 text-white"
-      >
-        {dark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-      </button>
+    <div className="p-4 max-w-lg mx-auto">
+      <h1 className="text-xl font-bold mb-3">Shop</h1>
+      <div className="grid grid-cols-2 gap-4">
+        {products.map((p) => (
+          <div key={p.id} className="border p-3 rounded">
+            <h2>{p.name}</h2>
+            <p>${p.price}</p>
+            <button
+              onClick={() => addToCart(p)}
+              className="bg-blue-500 text-white px-2 py-1 mt-2 rounded"
+            >
+              Add
+            </button>
+          </div>
+        ))}
+      </div>
+      <h2 className="text-lg font-semibold mt-4">Cart</h2>
+      <ul>
+        {cart.map((item, i) => (
+          <li key={i}>
+            {item.name} - ${item.price}
+          </li>
+        ))}
+      </ul>
+      <p className="font-bold mt-2">Total: ${total}</p>
     </div>
   );
 }
