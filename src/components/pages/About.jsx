@@ -1,74 +1,55 @@
-// A simple to-do list application for the command line.
+import React, { useState } from "react";
 
-// An array to hold our to-do items. Each item is an object.
-let todoList = [];
+export default function AIChatBox() {
+  const [messages, setMessages] = useState([
+    { sender: "ai", text: "Hello! I’m your AI assistant." },
+  ]);
+  const [input, setInput] = useState("");
 
-// A function to add a new to-do item.
-function addTodo(task) {
-  // We'll give each task a unique ID and a status.
-  const newItem = {
-    id: todoList.length + 1,
-    task: task,
-    isCompleted: false,
+  const sendMessage = () => {
+    if (!input.trim()) return;
+    const userMsg = { sender: "user", text: input };
+    setMessages([...messages, userMsg]);
+    setInput("");
+    setTimeout(() => {
+      setMessages((prev) => [
+        ...prev,
+        { sender: "ai", text: "This is an AI response." },
+      ]);
+    }, 1000);
   };
-  todoList.push(newItem);
-  console.log(`Task "${task}" has been added. ID: ${newItem.id}`);
+
+  return (
+    <div className="max-w-md mx-auto p-4 border rounded shadow">
+      <h1 className="text-xl font-bold mb-3">AI Chat</h1>
+      <div className="h-64 overflow-y-auto border p-2 rounded mb-3 bg-gray-50">
+        {messages.map((m, i) => (
+          <div
+            key={i}
+            className={`my-1 p-2 rounded w-fit ${
+              m.sender === "user"
+                ? "bg-blue-500 text-white ml-auto"
+                : "bg-gray-200 text-black"
+            }`}
+          >
+            {m.text}
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-2">
+        <input
+          className="border px-2 py-1 flex-grow"
+          placeholder="Type message..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+        />
+        <button
+          onClick={sendMessage}
+          className="bg-green-500 text-white px-3 rounded"
+        >
+          Send
+        </button>
+      </div>
+    </div>
+  );
 }
-
-// A function to display all to-do items.
-function viewTodos() {
-  if (todoList.length === 0) {
-    console.log("Your to-do list is empty! ✅");
-    return;
-  }
-  console.log("\n--- Your To-Do List ---");
-  todoList.forEach((item) => {
-    const status = item.isCompleted ? "✅ (Completed)" : "⏳ (Pending)";
-    console.log(`ID: ${item.id} | Task: ${item.task} | Status: ${status}`);
-  });
-  console.log("-----------------------");
-}
-
-// A function to mark an item as completed.
-function completeTodo(id) {
-  const item = todoList.find((todo) => todo.id === id);
-  if (item) {
-    item.isCompleted = true;
-    console.log(`Task ID ${id} has been marked as completed. 🎉`);
-  } else {
-    console.log(`Error: Task with ID ${id} not found.`);
-  }
-}
-
-// A function to remove a to-do item.
-function removeTodo(id) {
-  const initialLength = todoList.length;
-  todoList = todoList.filter((todo) => todo.id !== id);
-  if (todoList.length < initialLength) {
-    console.log(`Task ID ${id} has been removed. 🗑️`);
-  } else {
-    console.log(`Error: Task with ID ${id} not found.`);
-  }
-}
-
-// Let's add a few tasks to start.
-addTodo("Learn JavaScript basics");
-addTodo("Build a small project");
-addTodo("Read about ES6 features");
-
-// Now let's view the list.
-viewTodos();
-
-// Let's complete one of the tasks.
-completeTodo(2);
-
-// Let's view the list again to see the change.
-viewTodos();
-
-// Let's remove a task.
-removeTodo(1);
-
-// And view the final list.
-viewTodos();
-
-console.log("\nApplication finished. 👋");
