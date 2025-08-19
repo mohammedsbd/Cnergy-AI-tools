@@ -1,37 +1,38 @@
 import React, { useState } from "react";
 
-export default function AILoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export default function AIContactForm() {
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
 
   const submit = (e) => {
     e.preventDefault();
-    alert(`Logging in with ${email}`);
+    alert(`Message sent: ${form.message}`);
+    setForm({ name: "", email: "", message: "" });
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <form
-        onSubmit={submit}
-        className="p-6 bg-white shadow rounded max-w-sm w-full"
-      >
-        <h1 className="text-xl font-bold mb-4">Login to AI Platform</h1>
+    <div className="p-6 max-w-md mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Contact AI Team</h1>
+      <form onSubmit={submit} className="space-y-3">
         <input
-          type="email"
+          placeholder="Name"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          className="w-full border p-2 rounded"
+        />
+        <input
           placeholder="Email"
-          className="border p-2 w-full mb-3"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          className="w-full border p-2 rounded"
         />
-        <input
-          type="password"
-          placeholder="Password"
-          className="border p-2 w-full mb-4"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+        <textarea
+          placeholder="Message"
+          value={form.message}
+          onChange={(e) => setForm({ ...form, message: e.target.value })}
+          className="w-full border p-2 rounded"
         />
-        <button className="bg-indigo-600 text-white w-full py-2 rounded">
-          Login
+        <button className="bg-green-600 text-white px-4 py-2 rounded">
+          Send
         </button>
       </form>
     </div>
