@@ -1,36 +1,31 @@
 import React, { useState } from "react";
 
-export default function Counter() {
-  const [count, setCount] = useState(0);
+const quotes = [
+  "The journey of a thousand miles begins with one step.",
+  "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+  "Happiness depends upon ourselves.",
+  "Do one thing every day that scares you.",
+  "In the middle of every difficulty lies opportunity.",
+];
 
-  const increment = () => setCount((c) => c + 1);
-  const decrement = () => setCount((c) => c - 1);
-  const reset = () => setCount(0);
+export default function QuoteGenerator() {
+  const [quote, setQuote] = useState(quotes[0]);
+
+  const newQuote = () => {
+    const random = quotes[Math.floor(Math.random() * quotes.length)];
+    setQuote(random);
+  };
 
   return (
-    <div className="flex flex-col items-center mt-6 space-y-4">
-      <h1 className="text-2xl font-bold">Counter App</h1>
-      <div className="text-4xl font-mono">{count}</div>
-      <div className="space-x-3">
-        <button
-          onClick={increment}
-          className="bg-green-500 text-white px-3 py-1 rounded"
-        >
-          +
-        </button>
-        <button
-          onClick={decrement}
-          className="bg-red-500 text-white px-3 py-1 rounded"
-        >
-          -
-        </button>
-        <button
-          onClick={reset}
-          className="bg-gray-500 text-white px-3 py-1 rounded"
-        >
-          Reset
-        </button>
-      </div>
+    <div className="max-w-md mx-auto mt-6 p-4 border rounded-lg shadow">
+      <h2 className="text-xl font-semibold mb-3">Random Quote</h2>
+      <p className="italic mb-4">"{quote}"</p>
+      <button
+        onClick={newQuote}
+        className="bg-blue-600 text-white px-3 py-1 rounded"
+      >
+        Get New Quote
+      </button>
     </div>
   );
 }
