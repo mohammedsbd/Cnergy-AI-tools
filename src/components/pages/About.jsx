@@ -1,21 +1,31 @@
 import React, { useState } from "react";
 
-export default function NotificationBell() {
-  const [count, setCount] = useState(3);
+const items = ["Apple", "Banana", "Cherry", "Mango", "Grapes", "Orange"];
+
+export default function SearchFilter() {
+  const [query, setQuery] = useState("");
+
+  const filtered = items.filter((item) =>
+    item.toLowerCase().includes(query.toLowerCase())
+  );
 
   return (
-    <div className="flex justify-center mt-6">
-      <button
-        onClick={() => setCount(0)}
-        className="relative bg-gray-200 p-4 rounded-full"
-      >
-        🔔
-        {count > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full">
-            {count}
-          </span>
-        )}
-      </button>
+    <div className="p-4 max-w-md mx-auto">
+      <h1 className="text-xl font-bold mb-3">Search Fruits</h1>
+      <input
+        type="text"
+        placeholder="Type to search..."
+        className="border px-2 py-1 w-full mb-3"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      <ul>
+        {filtered.map((item, i) => (
+          <li key={i} className="py-1">
+            {item}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
