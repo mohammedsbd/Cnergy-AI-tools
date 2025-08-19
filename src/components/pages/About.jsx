@@ -1,35 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 
-const data = [
-  { id: 1, name: "Alice", age: 24, role: "Developer" },
-  { id: 2, name: "Bob", age: 30, role: "Designer" },
-  { id: 3, name: "Charlie", age: 28, role: "Manager" },
-];
+export default function ClipboardCopy() {
+  const [text, setText] = useState("Copy this text!");
+  const [copied, setCopied] = useState(false);
 
-export default function DataTable() {
+  const copyText = () => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
   return (
-    <div className="p-4 max-w-lg mx-auto">
-      <h1 className="text-xl font-bold mb-3">Team Members</h1>
-      <table className="w-full border">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border px-2 py-1">ID</th>
-            <th className="border px-2 py-1">Name</th>
-            <th className="border px-2 py-1">Age</th>
-            <th className="border px-2 py-1">Role</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((d) => (
-            <tr key={d.id}>
-              <td className="border px-2 py-1">{d.id}</td>
-              <td className="border px-2 py-1">{d.name}</td>
-              <td className="border px-2 py-1">{d.age}</td>
-              <td className="border px-2 py-1">{d.role}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="p-4 max-w-sm mx-auto">
+      <h1 className="text-lg font-bold mb-3">Clipboard Copy</h1>
+      <input
+        type="text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        className="border px-2 py-1 w-full"
+      />
+      <button
+        onClick={copyText}
+        className="mt-3 px-3 py-1 bg-blue-600 text-white rounded"
+      >
+        Copy
+      </button>
+      {copied && <p className="text-green-600 mt-2">Copied!</p>}
     </div>
   );
 }
