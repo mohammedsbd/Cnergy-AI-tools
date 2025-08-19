@@ -1,55 +1,34 @@
 import React, { useState } from "react";
 
-export default function AIChatBox() {
-  const [messages, setMessages] = useState([
-    { sender: "ai", text: "Hello! I’m your AI assistant." },
-  ]);
-  const [input, setInput] = useState("");
+export default function AIImageGenerator() {
+  const [prompt, setPrompt] = useState("");
+  const [image, setImage] = useState(null);
 
-  const sendMessage = () => {
-    if (!input.trim()) return;
-    const userMsg = { sender: "user", text: input };
-    setMessages([...messages, userMsg]);
-    setInput("");
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "ai", text: "This is an AI response." },
-      ]);
-    }, 1000);
+  const generateImage = () => {
+    if (!prompt.trim()) return;
+    setImage("https://placehold.co/300x200?text=AI+Image+Generated");
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 border rounded shadow">
-      <h1 className="text-xl font-bold mb-3">AI Chat</h1>
-      <div className="h-64 overflow-y-auto border p-2 rounded mb-3 bg-gray-50">
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            className={`my-1 p-2 rounded w-fit ${
-              m.sender === "user"
-                ? "bg-blue-500 text-white ml-auto"
-                : "bg-gray-200 text-black"
-            }`}
-          >
-            {m.text}
-          </div>
-        ))}
-      </div>
-      <div className="flex gap-2">
-        <input
-          className="border px-2 py-1 flex-grow"
-          placeholder="Type message..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
-        <button
-          onClick={sendMessage}
-          className="bg-green-500 text-white px-3 rounded"
-        >
-          Send
-        </button>
-      </div>
+    <div className="p-4 max-w-lg mx-auto border rounded shadow">
+      <h1 className="text-xl font-bold mb-3">AI Image Generator</h1>
+      <textarea
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        className="w-full border p-2 rounded mb-3"
+        placeholder="Describe an image..."
+      />
+      <button
+        onClick={generateImage}
+        className="bg-blue-600 text-white px-3 py-1 rounded"
+      >
+        Generate
+      </button>
+      {image && (
+        <div className="mt-4">
+          <img src={image} alt="AI result" className="rounded shadow" />
+        </div>
+      )}
     </div>
   );
 }
