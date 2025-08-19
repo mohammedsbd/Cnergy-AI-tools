@@ -1,19 +1,25 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-const images = Array.from(
-  { length: 6 },
-  (_, i) => `https://picsum.photos/seed/${i}/200/150`
-);
+export default function ProgressBar() {
+  const [progress, setProgress] = useState(0);
 
-export default function Gallery() {
+  useEffect(() => {
+    if (progress < 100) {
+      const timer = setTimeout(() => setProgress(progress + 10), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [progress]);
+
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Image Gallery</h1>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {images.map((img, i) => (
-          <img key={i} src={img} alt={`img-${i}`} className="rounded shadow" />
-        ))}
+    <div className="p-6 max-w-md mx-auto">
+      <h1 className="text-xl font-bold mb-4">Loading...</h1>
+      <div className="w-full bg-gray-200 rounded h-6 overflow-hidden">
+        <div
+          style={{ width: `${progress}%` }}
+          className="bg-green-500 h-6 transition-all"
+        ></div>
       </div>
+      <p className="mt-2">{progress}%</p>
     </div>
   );
 }
