@@ -1,22 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function ColorPicker() {
-  const [color, setColor] = useState("#ff0000");
+export default function Countdown() {
+  const [time, setTime] = useState(10);
+
+  useEffect(() => {
+    if (time > 0) {
+      const timer = setTimeout(() => setTime(time - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [time]);
 
   return (
-    <div className="p-4 max-w-sm mx-auto text-center">
-      <h1 className="text-xl font-bold mb-3">Color Picker</h1>
-      <input
-        type="color"
-        value={color}
-        onChange={(e) => setColor(e.target.value)}
-        className="w-16 h-16 border"
-      />
-      <p className="mt-3">Selected: {color}</p>
-      <div
-        className="mt-3 w-24 h-24 border mx-auto"
-        style={{ backgroundColor: color }}
-      ></div>
+    <div className="flex flex-col items-center mt-6">
+      <h1 className="text-xl font-bold">Countdown Timer</h1>
+      <p className="text-4xl font-mono mt-3">{time}</p>
+      {time === 0 && <p className="mt-2 text-red-500">Time’s up!</p>}
     </div>
   );
 }
