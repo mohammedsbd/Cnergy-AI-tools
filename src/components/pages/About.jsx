@@ -1,28 +1,22 @@
 import React, { useState } from "react";
 
-const menu = [
-  { title: "Dashboard", content: "Overview of your data" },
-  { title: "Settings", content: "Adjust your preferences" },
-  { title: "Help", content: "Find support articles" },
-];
-
-export default function AccordionMenu() {
-  const [open, setOpen] = useState(null);
+export default function ThemeSwitcher() {
+  const [theme, setTheme] = useState("light");
 
   return (
-    <div className="max-w-md mx-auto mt-6">
-      <h1 className="text-xl font-bold mb-3">Accordion Menu</h1>
-      {menu.map((item, i) => (
-        <div key={i} className="border rounded mb-2">
-          <button
-            className="w-full text-left px-3 py-2 font-semibold"
-            onClick={() => setOpen(open === i ? null : i)}
-          >
-            {item.title}
-          </button>
-          {open === i && <div className="px-3 py-2">{item.content}</div>}
-        </div>
-      ))}
+    <div
+      className={`min-h-screen flex flex-col items-center justify-center ${
+        theme === "dark" ? "bg-black text-white" : "bg-white text-black"
+      }`}
+    >
+      <h1 className="text-2xl font-bold mb-4">Theme Switcher</h1>
+      <button
+        onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+        className="px-4 py-2 bg-blue-600 text-white rounded"
+      >
+        Toggle Theme
+      </button>
+      <p className="mt-3">Current theme: {theme}</p>
     </div>
   );
 }
