@@ -1,28 +1,21 @@
 import React, { useState } from "react";
 
-export default function Tabs() {
-  const [active, setActive] = useState("Home");
-
-  const tabs = ["Home", "Profile", "Settings"];
+export default function NotificationBell() {
+  const [count, setCount] = useState(3);
 
   return (
-    <div className="max-w-md mx-auto mt-6">
-      <div className="flex space-x-3 border-b">
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActive(tab)}
-            className={`px-3 py-2 ${
-              active === tab ? "border-b-2 border-blue-600 font-bold" : ""
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-      <div className="p-4">
-        <p>You selected: {active}</p>
-      </div>
+    <div className="flex justify-center mt-6">
+      <button
+        onClick={() => setCount(0)}
+        className="relative bg-gray-200 p-4 rounded-full"
+      >
+        🔔
+        {count > 0 && (
+          <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full">
+            {count}
+          </span>
+        )}
+      </button>
     </div>
   );
 }
