@@ -1,34 +1,21 @@
 import React from "react";
 
-const useCases = [
-  {
-    title: "Content Generation",
-    desc: "Create blogs, ads, and product descriptions instantly.",
-  },
-  {
-    title: "Customer Support",
-    desc: "Automated 24/7 AI chatbots with natural responses.",
-  },
-  {
-    title: "Data Analysis",
-    desc: "Summarize large datasets with clear insights.",
-  },
-];
-
-export default function AIUseCases() {
+export default function AIHeroSection() {
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">AI Use Cases</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {useCases.map((u, i) => (
-          <div
-            key={i}
-            className="p-4 border rounded shadow hover:shadow-lg transition"
-          >
-            <h2 className="text-lg font-semibold mb-2">{u.title}</h2>
-            <p>{u.desc}</p>
-          </div>
-        ))}
+    <div className="h-96 flex flex-col items-center justify-center text-center bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
+      <h1 className="text-4xl font-bold mb-4">Next-Gen AI Platform</h1>
+      <p className="max-w-2xl mb-6">
+        Harness the power of artificial intelligence to transform your workflow.
+        Build smarter apps, generate creative content, and automate tasks with
+        ease.
+      </p>
+      <div className="space-x-4">
+        <button className="bg-white text-indigo-600 px-4 py-2 rounded">
+          Get Started
+        </button>
+        <button className="border border-white px-4 py-2 rounded">
+          Learn More
+        </button>
       </div>
     </div>
   );
