@@ -1,25 +1,50 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-export default function ProgressBar() {
-  const [progress, setProgress] = useState(0);
+export default function LoginForm() {
+  const [form, setForm] = useState({ username: "", password: "" });
+  const [loggedIn, setLoggedIn] = useState(false);
 
-  useEffect(() => {
-    if (progress < 100) {
-      const timer = setTimeout(() => setProgress(progress + 10), 500);
-      return () => clearTimeout(timer);
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (form.username && form.password) {
+      setLoggedIn(true);
     }
-  }, [progress]);
+  };
 
   return (
-    <div className="p-6 max-w-md mx-auto">
-      <h1 className="text-xl font-bold mb-4">Loading...</h1>
-      <div className="w-full bg-gray-200 rounded h-6 overflow-hidden">
-        <div
-          style={{ width: `${progress}%` }}
-          className="bg-green-500 h-6 transition-all"
-        ></div>
-      </div>
-      <p className="mt-2">{progress}%</p>
+    <div className="max-w-sm mx-auto mt-6 p-4 border rounded shadow">
+      {loggedIn ? (
+        <h2 className="text-xl font-bold">Welcome, {form.username}!</h2>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <h1 className="text-lg font-semibold">Login</h1>
+          <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            className="w-full border px-2 py-1"
+            value={form.username}
+            onChange={handleChange}
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            className="w-full border px-2 py-1"
+            value={form.password}
+            onChange={handleChange}
+          />
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-3 py-1 rounded"
+          >
+            Login
+          </button>
+        </form>
+      )}
     </div>
   );
 }
