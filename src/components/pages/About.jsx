@@ -1,50 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 
-export default function StepperForm() {
-  const [step, setStep] = useState(1);
-  const [form, setForm] = useState({ name: "", email: "" });
-
-  const next = () => setStep((s) => s + 1);
-  const prev = () => setStep((s) => s - 1);
-
+export default function HoverCard() {
   return (
-    <div className="p-4 max-w-sm mx-auto">
-      <h1 className="text-xl font-bold mb-3">Stepper Form</h1>
-      {step === 1 && (
-        <input
-          placeholder="Name"
-          className="w-full border px-2 py-1 mb-3"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-        />
-      )}
-      {step === 2 && (
-        <input
-          placeholder="Email"
-          className="w-full border px-2 py-1 mb-3"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-        />
-      )}
-      {step === 3 && (
-        <p>
-          Confirm: {form.name} - {form.email}
-        </p>
-      )}
-      <div className="space-x-2 mt-3">
-        {step > 1 && (
-          <button onClick={prev} className="px-3 py-1 bg-gray-400 rounded">
-            Back
-          </button>
-        )}
-        {step < 3 && (
-          <button
-            onClick={next}
-            className="px-3 py-1 bg-blue-600 text-white rounded"
-          >
-            Next
-          </button>
-        )}
+    <div className="flex justify-center mt-6">
+      <div className="relative group w-48 h-32 bg-gray-200 rounded shadow">
+        <p className="text-center pt-12">Hover me!</p>
+        <div className="absolute inset-0 bg-black bg-opacity-70 text-white opacity-0 group-hover:opacity-100 transition flex items-center justify-center rounded">
+          <p>More Info</p>
+        </div>
       </div>
     </div>
   );
