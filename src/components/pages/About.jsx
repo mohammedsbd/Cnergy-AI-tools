@@ -1,27 +1,40 @@
 import React, { useState } from "react";
 
-const songs = ["Song A", "Song B", "Song C"];
-
-export default function MusicPlayer() {
-  const [current, setCurrent] = useState(null);
+export default function Stepper() {
+  const steps = ["Info", "Details", "Confirm"];
+  const [current, setCurrent] = useState(0);
 
   return (
-    <div className="max-w-sm mx-auto mt-6 p-4 border rounded">
-      <h2 className="text-xl font-bold mb-3">Music Player</h2>
-      <ul className="space-y-2">
-        {songs.map((song, i) => (
-          <li
+    <div className="max-w-md mx-auto mt-6">
+      <div className="flex justify-between mb-4">
+        {steps.map((step, i) => (
+          <div
             key={i}
-            className={`cursor-pointer ${
-              current === song ? "font-bold text-blue-600" : ""
-            }`}
-            onClick={() => setCurrent(song)}
+            className={`flex-1 text-center ${i <= current ? "font-bold" : ""}`}
           >
-            {song}
-          </li>
+            {step}
+          </div>
         ))}
-      </ul>
-      {current && <p className="mt-4">Now Playing: {current}</p>}
+      </div>
+      <p>
+        Step {current + 1} of {steps.length}
+      </p>
+      <div className="mt-4 space-x-2">
+        <button
+          disabled={current === 0}
+          onClick={() => setCurrent(current - 1)}
+          className="px-3 py-1 bg-gray-300 rounded"
+        >
+          Back
+        </button>
+        <button
+          disabled={current === steps.length - 1}
+          onClick={() => setCurrent(current + 1)}
+          className="px-3 py-1 bg-blue-600 text-white rounded"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }
