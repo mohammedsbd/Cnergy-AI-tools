@@ -1,46 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-export default function Timer() {
-  const [seconds, setSeconds] = useState(0);
-  const [running, setRunning] = useState(false);
+const faqs = [
+  { q: "What is React?", a: "A JavaScript library for building UIs." },
+  { q: "What is JSX?", a: "A syntax extension for JavaScript." },
+  {
+    q: "What are hooks?",
+    a: "Functions that let you use state and lifecycle features.",
+  },
+];
 
-  useEffect(() => {
-    let timer;
-    if (running) {
-      timer = setInterval(() => setSeconds((s) => s + 1), 1000);
-    }
-    return () => clearInterval(timer);
-  }, [running]);
+export default function FAQAccordion() {
+  const [openIndex, setOpenIndex] = useState(null);
 
-  const reset = () => {
-    setSeconds(0);
-    setRunning(false);
-  };
+  const toggle = (i) => setOpenIndex(openIndex === i ? null : i);
 
   return (
-    <div className="flex flex-col items-center mt-6 space-y-3">
-      <h1 className="text-xl font-bold">Timer</h1>
-      <div className="text-3xl font-mono">{seconds}s</div>
-      <div className="space-x-2">
-        <button
-          onClick={() => setRunning(true)}
-          className="bg-green-500 text-white px-3 py-1 rounded"
-        >
-          Start
-        </button>
-        <button
-          onClick={() => setRunning(false)}
-          className="bg-yellow-500 text-white px-3 py-1 rounded"
-        >
-          Pause
-        </button>
-        <button
-          onClick={reset}
-          className="bg-red-500 text-white px-3 py-1 rounded"
-        >
-          Reset
-        </button>
-      </div>
+    <div className="max-w-md mx-auto mt-6">
+      <h1 className="text-xl font-bold mb-3">FAQs</h1>
+      {faqs.map((item, i) => (
+        <div key={i} className="border rounded mb-2">
+          <button
+            onClick={() => toggle(i)}
+            className="w-full text-left px-3 py-2 font-semibold"
+          >
+            {item.q}
+          </button>
+          {openIndex === i && (
+            <div className="px-3 py-2 text-gray-700">{item.a}</div>
+          )}
+        </div>
+      ))}
     </div>
   );
 }
