@@ -1,31 +1,35 @@
-import React, { useState } from "react";
+import React from "react";
 
-const items = ["Apple", "Banana", "Cherry", "Mango", "Grapes", "Orange"];
+const data = [
+  { id: 1, name: "Alice", age: 24, role: "Developer" },
+  { id: 2, name: "Bob", age: 30, role: "Designer" },
+  { id: 3, name: "Charlie", age: 28, role: "Manager" },
+];
 
-export default function SearchFilter() {
-  const [query, setQuery] = useState("");
-
-  const filtered = items.filter((item) =>
-    item.toLowerCase().includes(query.toLowerCase())
-  );
-
+export default function DataTable() {
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h1 className="text-xl font-bold mb-3">Search Fruits</h1>
-      <input
-        type="text"
-        placeholder="Type to search..."
-        className="border px-2 py-1 w-full mb-3"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
-      <ul>
-        {filtered.map((item, i) => (
-          <li key={i} className="py-1">
-            {item}
-          </li>
-        ))}
-      </ul>
+    <div className="p-4 max-w-lg mx-auto">
+      <h1 className="text-xl font-bold mb-3">Team Members</h1>
+      <table className="w-full border">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="border px-2 py-1">ID</th>
+            <th className="border px-2 py-1">Name</th>
+            <th className="border px-2 py-1">Age</th>
+            <th className="border px-2 py-1">Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((d) => (
+            <tr key={d.id}>
+              <td className="border px-2 py-1">{d.id}</td>
+              <td className="border px-2 py-1">{d.name}</td>
+              <td className="border px-2 py-1">{d.age}</td>
+              <td className="border px-2 py-1">{d.role}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
