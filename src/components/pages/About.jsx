@@ -1,49 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function FormExample() {
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
+export default function Timer() {
+  const [seconds, setSeconds] = useState(0);
+  const [running, setRunning] = useState(false);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  useEffect(() => {
+    let timer;
+    if (running) {
+      timer = setInterval(() => setSeconds((s) => s + 1), 1000);
+    }
+    return () => clearInterval(timer);
+  }, [running]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert(`Submitted: ${form.name} - ${form.email}`);
+  const reset = () => {
+    setSeconds(0);
+    setRunning(false);
   };
 
   return (
-    <div className="max-w-md mx-auto mt-6 p-4 border rounded-lg">
-      <h2 className="text-xl font-semibold mb-3">Contact Form</h2>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <input
-          name="name"
-          placeholder="Name"
-          value={form.name}
-          onChange={handleChange}
-          className="w-full border px-2 py-1"
-        />
-        <input
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          className="w-full border px-2 py-1"
-        />
-        <textarea
-          name="message"
-          placeholder="Message"
-          value={form.message}
-          onChange={handleChange}
-          className="w-full border px-2 py-1"
-        />
+    <div className="flex flex-col items-center mt-6 space-y-3">
+      <h1 className="text-xl font-bold">Timer</h1>
+      <div className="text-3xl font-mono">{seconds}s</div>
+      <div className="space-x-2">
         <button
-          type="submit"
-          className="bg-green-600 text-white px-3 py-1 rounded"
+          onClick={() => setRunning(true)}
+          className="bg-green-500 text-white px-3 py-1 rounded"
         >
-          Submit
+          Start
         </button>
-      </form>
+        <button
+          onClick={() => setRunning(false)}
+          className="bg-yellow-500 text-white px-3 py-1 rounded"
+        >
+          Pause
+        </button>
+        <button
+          onClick={reset}
+          className="bg-red-500 text-white px-3 py-1 rounded"
+        >
+          Reset
+        </button>
+      </div>
     </div>
   );
 }
