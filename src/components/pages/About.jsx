@@ -1,36 +1,39 @@
 import React, { useState } from "react";
 
-function BMI() {
-  const [height, setHeight] = useState("");
-  const [weight, setWeight] = useState("");
-  const [bmi, setBmi] = useState(null);
+function Translator() {
+  const [text, setText] = useState("");
+  const [translated, setTranslated] = useState("");
+  const [lang, setLang] = useState("es");
 
-  const calculate = () => {
-    const h = parseFloat(height) / 100;
-    const w = parseFloat(weight);
-    if (h > 0 && w > 0) {
-      const val = (w / (h * h)).toFixed(1);
-      setBmi(val);
-    }
+  const translate = () => {
+    fetch(
+      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
+        text
+      )}&langpair=en|${lang}`
+    )
+      .then((res) => res.json())
+      .then((data) => setTranslated(data.responseData.translatedText));
   };
 
   return (
     <div>
-      <h2>BMI Calculator</h2>
-      <input
-        placeholder="Height (cm)"
-        value={height}
-        onChange={(e) => setHeight(e.target.value)}
+      <h2>Language Translator</h2>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        rows={3}
+        placeholder="Enter text in English..."
+        style={{ width: "100%" }}
       />
-      <input
-        placeholder="Weight (kg)"
-        value={weight}
-        onChange={(e) => setWeight(e.target.value)}
-      />
-      <button onClick={calculate}>Calculate</button>
-      {bmi && <p>Your BMI is {bmi}</p>}
+      <select value={lang} onChange={(e) => setLang(e.target.value)}>
+        <option value="es">Spanish</option>
+        <option value="fr">French</option>
+        <option value="de">German</option>
+      </select>
+      <button onClick={translate}>Translate</button>
+      {translated && <p>Translation: {translated}</p>}
     </div>
   );
 }
 
-export default BMI;
+export default Translator;
