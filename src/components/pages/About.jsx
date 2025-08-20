@@ -1,42 +1,37 @@
 import React, { useState } from "react";
 
-function ThemeToggler() {
-  const [dark, setDark] = useState(false);
+function FilterableList() {
+  const cities = [
+    "Paris",
+    "London",
+    "Tokyo",
+    "Nairobi",
+    "Addis Ababa",
+    "New York",
+  ];
+  const [query, setQuery] = useState("");
+
+  const filtered = cities.filter((c) =>
+    c.toLowerCase().includes(query.toLowerCase())
+  );
 
   return (
-    <div
-      style={{
-        background: dark ? "#333" : "#fff",
-        color: dark ? "#fff" : "#000",
-        minHeight: "100vh",
-        padding: "16px",
-      }}
-    >
-      <h2>{dark ? "Dark" : "Light"} Theme</h2>
-      <button onClick={() => setDark((d) => !d)}>Switch Theme</button>
+    <div>
+      <h2>Search Cities</h2>
+      <input
+        placeholder="Search…"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      <ul>
+        {filtered.length ? (
+          filtered.map((c, i) => <li key={i}>{c}</li>)
+        ) : (
+          <li>No matches</li>
+        )}
+      </ul>
     </div>
   );
 }
 
-export default ThemeToggler;
-export async function getStaticProps() {
-  return {
-    props: {
-      title: "About",
-    },
-  };
-}
-
-export function getStaticPaths() {
-  return {
-    paths: [], // No dynamic paths
-    fallback: false, // No fallback
-  };
-}
-export function getServerSideProps() {
-  return {
-    props: {
-      title: "About",
-    },
-  };
-}
+export default FilterableList;
