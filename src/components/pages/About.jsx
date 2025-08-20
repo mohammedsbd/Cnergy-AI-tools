@@ -1,78 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-function GitHubExplorer() {
-  const [username, setUsername] = useState("");
-  const [repos, setRepos] = useState([]);
-  const [issues, setIssues] = useState([]);
-  const [loading, setLoading] = useState(false);
+const cities = [
+  { name: "New York", zone: "America/New_York" },
+  { name: "London", zone: "Europe/London" },
+  { name: "Tokyo", zone: "Asia/Tokyo" },
+  { name: "Nairobi", zone: "Africa/Nairobi" },
+  { name: "Addis Ababa", zone: "Africa/Addis_Ababa" },
+];
 
-  const fetchRepos = async () => {
-    if (!username.trim()) return;
-    setLoading(true);
-    try {
-      const res = await fetch(`https://api.github.com/users/${username}/repos`);
-      const data = await res.json();
-      setRepos(data);
-      setIssues([]);
-    } catch {
-      setRepos([]);
-    }
-    setLoading(false);
-  };
+function WorldClock() {
+  const [times, setTimes] = useState({});
 
-  const fetchIssues = async (repo) => {
-    setLoading(true);
-    try {
-      const res = await fetch(
-        `https://api.github.com/repos/${username}/${repo}/issues`
-      );
-      const data = await res.json();
-      setIssues(data);
-    } catch {
-      setIssues([]);
-    }
-    setLoading(false);
-  };
+  useEffect(() => {
+    const update = () => {
+      const now = new Date();
+      const obj = {};
+      cities.forEach((c) => {
+        obj[c.name] = now.toLocaleTimeString("en-US", { timeZone: c.zone });
+      });
+      setTimes(obj);
+    };
+    update();
+    const id = setInterval(update, 1000);
+    return () => clearInterval(id);
+  }, []);
 
   return (
     <div>
-      <h2>GitHub Repo Explorer</h2>
-      <input
-        placeholder="GitHub username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <button onClick={fetchRepos} disabled={loading}>
-        {loading ? "Loading repos..." : "Fetch Repositories"}
-      </button>
-      <div style={{ display: "flex", marginTop: "20px" }}>
-        <div style={{ flex: 1, marginRight: "20px" }}>
-          <h3>Repositories</h3>
-          <ul>
-            {repos.map((repo) => (
-              <li
-                key={repo.id}
-                onClick={() => fetchIssues(repo.name)}
-                style={{ cursor: "pointer" }}
-              >
-                {repo.name}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div style={{ flex: 1 }}>
-          <h3>Issues</h3>
-          <ul>
-            {issues.map((issue) => (
-              <li key={issue.id}>
-                <strong>{issue.title}</strong>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+      <h2>World Clock</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>City</th>
+            <th>Local Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {cities.map((c) => (
+            <tr key={c.name}>
+              <td>{c.name}</td>
+              <td>{times[c.name]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
 
-export default GitHubExplorer;
+export default WorldClock;
