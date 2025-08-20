@@ -1,44 +1,34 @@
 import React, { useState } from "react";
+import "./modal.css";
 
-function TabPanel({ tabs }) {
-  const [active, setActive] = useState(0);
+function Modal({ isOpen, onClose, children }) {
+  if (!isOpen) return null;
+  return (
+    <>
+      <div className="overlay" onClick={onClose} />
+      <div className="modal">
+        <button className="close-btn" onClick={onClose}>
+          ×
+        </button>
+        <div className="modal-content">{children}</div>
+      </div>
+    </>
+  );
+}
+
+function ModalApp() {
+  const [open, setOpen] = useState(false);
 
   return (
     <div>
-      <div className="tab-headers">
-        {tabs.map((t, i) => (
-          <button
-            key={i}
-            onClick={() => setActive(i)}
-            style={{
-              fontWeight: i === active ? "bold" : "normal",
-              marginRight: "8px",
-            }}
-          >
-            {t.title}
-          </button>
-        ))}
-      </div>
-      <div className="tab-content" style={{ marginTop: "12px" }}>
-        {tabs[active] && tabs[active].content}
-      </div>
+      <h2>Modal Example</h2>
+      <button onClick={() => setOpen(true)}>Open Modal</button>
+      <Modal isOpen={open} onClose={() => setOpen(false)}>
+        <h3>Hello from Modal!</h3>
+        <p>This is your modal content.</p>
+      </Modal>
     </div>
   );
 }
 
-function TabsApp() {
-  const myTabs = [
-    { title: "Home", content: <div>Welcome Home!</div> },
-    { title: "Profile", content: <div>Your Profile Section</div> },
-    { title: "Settings", content: <div>Adjust Settings Here</div> },
-  ];
-
-  return (
-    <div>
-      <h2>Tabs Example</h2>
-      <TabPanel tabs={myTabs} />
-    </div>
-  );
-}
-
-export default TabsApp;
+export default ModalApp;
