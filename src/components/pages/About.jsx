@@ -1,36 +1,32 @@
 import React, { useState } from "react";
-import CounterLogger from "./CounterLogger";
-import TabsApp from "./TabsApp";
-import FetchApp from "./FetchApp";
 
-function MiniApp() {
-  const sections = ["Counter", "Tabs", "Fetch"];
-  const [sel, setSel] = useState(sections[0]);
+function JokeGenerator() {
+  const [joke, setJoke] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const fetchJoke = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        "https://official-joke-api.appspot.com/random_joke"
+      );
+      const data = await res.json();
+      setJoke(`${data.setup} — ${data.punchline}`);
+    } catch {
+      setJoke("Oops, something went wrong.");
+    }
+    setLoading(false);
+  };
 
   return (
     <div>
-      <h1>Mini Combined App</h1>
-      <div>
-        {sections.map((s) => (
-          <button
-            key={s}
-            onClick={() => setSel(s)}
-            style={{
-              fontWeight: s === sel ? "bold" : "normal",
-              marginRight: "8px",
-            }}
-          >
-            {s}
-          </button>
-        ))}
-      </div>
-      <div style={{ marginTop: "20px" }}>
-        {sel === "Counter" && <CounterLogger />}
-        {sel === "Tabs" && <TabsApp />}
-        {sel === "Fetch" && <FetchApp />}
-      </div>
+      <h2>Random Joke</h2>
+      <button onClick={fetchJoke} disabled={loading}>
+        {loading ? "Loading..." : "Tell me a joke"}
+      </button>
+      {joke && <p>{joke}</p>}
     </div>
   );
 }
 
-export default MiniApp;
+export default JokeGenerator;
