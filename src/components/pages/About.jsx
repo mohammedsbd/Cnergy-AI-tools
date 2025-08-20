@@ -1,42 +1,43 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-function IPGeolocation() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+function LyricsFinder() {
+  const [artist, setArtist] = useState("");
+  const [title, setTitle] = useState("");
+  const [lyrics, setLyrics] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetch("https://ipapi.co/json/")
-      .then((res) => res.json())
-      .then((json) => setData(json))
-      .catch(() => setData(null))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) return <p>Loading IP info…</p>;
-  if (!data) return <p>Failed to retrieve data.</p>;
+  const fetchLyrics = async () => {
+    if (!artist || !title) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${title}`);
+      const data = await res.json();
+      setLyrics(data.lyrics || "No lyrics found.");
+    } catch {
+      setLyrics("Error fetching lyrics.");
+    }
+    setLoading(false);
+  };
 
   return (
     <div>
-      <h2>Your IP Info</h2>
-      <ul>
-        <li>
-          <strong>IP:</strong> {data.ip}
-        </li>
-        <li>
-          <strong>City:</strong> {data.city}
-        </li>
-        <li>
-          <strong>Region:</strong> {data.region}
-        </li>
-        <li>
-          <strong>Country:</strong> {data.country_name}
-        </li>
-        <li>
-          <strong>ISP:</strong> {data.org}
-        </li>
-      </ul>
+      <h2>Lyrics Finder</h2>
+      <input
+        placeholder="Artist"
+        value={artist}
+        onChange={(e) => setArtist(e.target.value)}
+      />
+      <input
+        placeholder="Title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      <button onClick={fetchLyrics} disabled={loading || !artist || !title}>
+        {loading ? "Searching..." : "Fetch Lyrics"}
+      </button>
+      {lyrics && <pre style={{ marginTop: "12px" }}>{lyrics}</pre>}
     </div>
   );
 }
 
-export default IPGeolocation;
+export default LyricsFinder;
