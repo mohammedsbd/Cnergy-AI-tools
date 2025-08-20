@@ -1,53 +1,44 @@
 import React, { useState } from "react";
 
-function TodoApp() {
-  const [tasks, setTasks] = useState([
-    { id: 1, text: "Buy milk", done: false },
-    { id: 2, text: "Write JSX", done: false },
-  ]);
-  const [input, setInput] = useState("");
-
-  const addTask = () => {
-    if (!input.trim()) return;
-    setTasks((t) => [
-      ...t,
-      { id: Date.now(), text: input.trim(), done: false },
-    ]);
-    setInput("");
-  };
-
-  const toggle = (id) => {
-    setTasks((t) =>
-      t.map((task) => (task.id === id ? { ...task, done: !task.done } : task))
-    );
-  };
-
-  const remove = (id) => {
-    setTasks((t) => t.filter((task) => task.id !== id));
-  };
+function TabPanel({ tabs }) {
+  const [active, setActive] = useState(0);
 
   return (
     <div>
-      <h2>Todo App</h2>
-      <input
-        type="text"
-        value={input}
-        placeholder="New task"
-        onChange={(e) => setInput(e.target.value)}
-      />
-      <button onClick={addTask}>Add</button>
-      <ul>
-        {tasks.map(({ id, text, done }) => (
-          <li key={id} style={{ textDecoration: done ? "line-through" : "" }}>
-            <span onClick={() => toggle(id)} style={{ cursor: "pointer" }}>
-              {text}
-            </span>
-            <button onClick={() => remove(id)}>Delete</button>
-          </li>
+      <div className="tab-headers">
+        {tabs.map((t, i) => (
+          <button
+            key={i}
+            onClick={() => setActive(i)}
+            style={{
+              fontWeight: i === active ? "bold" : "normal",
+              marginRight: "8px",
+            }}
+          >
+            {t.title}
+          </button>
         ))}
-      </ul>
+      </div>
+      <div className="tab-content" style={{ marginTop: "12px" }}>
+        {tabs[active] && tabs[active].content}
+      </div>
     </div>
   );
 }
 
-export default TodoApp;
+function TabsApp() {
+  const myTabs = [
+    { title: "Home", content: <div>Welcome Home!</div> },
+    { title: "Profile", content: <div>Your Profile Section</div> },
+    { title: "Settings", content: <div>Adjust Settings Here</div> },
+  ];
+
+  return (
+    <div>
+      <h2>Tabs Example</h2>
+      <TabPanel tabs={myTabs} />
+    </div>
+  );
+}
+
+export default TabsApp;
