@@ -1,41 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-function HabitTracker() {
-  const [habit, setHabit] = useState("");
-  const [record, setRecord] = useState([]);
+function NewsFeed() {
+  const [articles, setArticles] = useState([]);
+  const [category, setCategory] = useState("general");
 
-  const addHabit = () => {
-    if (!habit.trim()) return;
-    setRecord((r) => [...r, { name: habit.trim(), done: false }]);
-    setHabit("");
-  };
-
-  const toggle = (i) => {
-    setRecord((r) =>
-      r.map((h, idx) => (idx === i ? { ...h, done: !h.done } : h))
-    );
-  };
+  useEffect(() => {
+    fetch(
+      `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=YOUR_API_KEY`
+    )
+      .then((res) => res.json())
+      .then((data) => setArticles(data.articles || []));
+  }, [category]);
 
   return (
     <div>
-      <h2>Habit Tracker</h2>
-      <input
-        value={habit}
-        onChange={(e) => setHabit(e.target.value)}
-        placeholder="New habit"
-      />
-      <button onClick={addHabit}>Add</button>
+      <h2>News Feed</h2>
+      <select value={category} onChange={(e) => setCategory(e.target.value)}>
+        {["general", "technology", "health", "sports", "business"].map((c) => (
+          <option key={c} value={c}>
+            {c}
+          </option>
+        ))}
+      </select>
       <ul>
-        {record.map((h, i) => (
-          <li
-            key={i}
-            onClick={() => toggle(i)}
-            style={{
-              textDecoration: h.done ? "line-through" : "none",
-              cursor: "pointer",
-            }}
-          >
-            {h.name}
+        {articles.map((a, i) => (
+          <li key={i}>
+            <a href={a.url} target="_blank" rel="noopener noreferrer">
+              {a.title}
+            </a>
           </li>
         ))}
       </ul>
@@ -43,4 +35,4 @@ function HabitTracker() {
   );
 }
 
-export default HabitTracker;
+export default NewsFeed;
