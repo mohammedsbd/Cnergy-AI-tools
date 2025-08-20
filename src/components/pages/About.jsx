@@ -1,49 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-function WeatherWidget() {
-  const [city, setCity] = useState("");
-  const [weather, setWeather] = useState(null);
-  const [loading, setLoading] = useState(false);
+function CurrencyConverter() {
+  const [amount, setAmount] = useState(1);
+  const [rates, setRates] = useState({});
+  const [base, setBase] = useState("USD");
+  const [target, setTarget] = useState("EUR");
 
-  const fetchWeather = async () => {
-    if (!city.trim()) return;
-    setLoading(true);
-    try {
-      const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=YOUR_API_KEY&units=metric`
-      );
-      const data = await res.json();
-      setWeather(data);
-    } catch {
-      setWeather(null);
-    }
-    setLoading(false);
-  };
+  useEffect(() => {
+    fetch("https://api.exchangerate-api.com/v4/latest/USD")
+      .then((res) => res.json())
+      .then((data) => setRates(data.rates))
+      .catch(() => setRates({}));
+  }, []);
+
+  const converted = rates[target]
+    ? ((amount * rates[target]) / rates[base]).toFixed(4)
+    : "—";
 
   return (
     <div>
-      <h2>Weather Finder</h2>
+      <h2>Currency Converter</h2>
       <input
-        placeholder="Enter city"
-        value={city}
-        onChange={(e) => setCity(e.target.value)}
+        type="number"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
       />
-      <button onClick={fetchWeather} disabled={loading}>
-        {loading ? "Loading…" : "Get Weather"}
-      </button>
-      {weather && weather.main && (
-        <div>
-          <p>
-            <strong>
-              {weather.name}, {weather.sys.country}
-            </strong>
-          </p>
-          <p>Temperature: {weather.main.temp}°C</p>
-          <p>Conditions: {weather.weather[0].description}</p>
-        </div>
-      )}
+      <select value={base} onChange={(e) => setBase(e.target.value)}>
+        {Object.keys(rates).map((r) => (
+          <option key={r} value={r}>
+            {r}
+          </option>
+        ))}
+      </select>
+      →
+      <select value={target} onChange={(e) => setTarget(e.target.value)}>
+        {Object.keys(rates).map((r) => (
+          <option key={r} value={r}>
+            {r}
+          </option>
+        ))}
+      </select>
+      <p>Converted: {converted}</p>
     </div>
   );
 }
 
-export default WeatherWidget;
+export default CurrencyConverter;
