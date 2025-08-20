@@ -1,31 +1,40 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-function RecipeGenerator() {
-  const [meal, setMeal] = useState(null);
+const faqs = [
+  { q: "What is React?", a: "React is a JavaScript library for building UIs." },
+  {
+    q: "What is JSX?",
+    a: "JSX is a syntax extension for JavaScript that resembles HTML.",
+  },
+  {
+    q: "What is a hook?",
+    a: "Hooks let you use React state and lifecycle features in function components.",
+  },
+];
 
-  const fetchMeal = () => {
-    fetch("https://www.themealdb.com/api/json/v1/1/random.php")
-      .then((res) => res.json())
-      .then((data) => setMeal(data.meals[0]))
-      .catch(() => setMeal(null));
-  };
-
-  useEffect(() => {
-    fetchMeal();
-  }, []);
-
-  if (!meal) return <p>Loading...</p>;
+function FAQAccordion() {
+  const [openIndex, setOpenIndex] = useState(null);
 
   return (
     <div>
-      <h2>Random Meal</h2>
-      <h3>{meal.strMeal}</h3>
-      <img src={meal.strMealThumb} alt={meal.strMeal} width="300" />
-      <h4>Instructions</h4>
-      <p>{meal.strInstructions}</p>
-      <button onClick={fetchMeal}>Get Another</button>
+      <h2>FAQs</h2>
+      {faqs.map((f, i) => (
+        <div key={i} style={{ marginBottom: "8px" }}>
+          <div
+            onClick={() => setOpenIndex(openIndex === i ? null : i)}
+            style={{ cursor: "pointer", background: "#eee", padding: "8px" }}
+          >
+            {f.q}
+          </div>
+          {openIndex === i && (
+            <div style={{ padding: "8px", border: "1px solid #ddd" }}>
+              {f.a}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 }
 
-export default RecipeGenerator;
+export default FAQAccordion;
