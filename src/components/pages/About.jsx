@@ -1,50 +1,52 @@
 import React, { useState } from "react";
 
-function MovieSearch() {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
-  const [favorites, setFavorites] = useState([]);
+function ExpenseSplitter() {
+  const [names, setNames] = useState("");
+  const [total, setTotal] = useState("");
+  const [result, setResult] = useState(null);
 
-  const searchMovies = () => {
-    fetch(`https://www.omdbapi.com/?apikey=YOUR_KEY&s=${query}`)
-      .then((res) => res.json())
-      .then((data) => setResults(data.Search || []));
+  const split = () => {
+    const people = names
+      .split(",")
+      .map((n) => n.trim())
+      .filter((n) => n);
+    const amount = parseFloat(total);
+    if (!people.length || isNaN(amount)) return;
+    const share = (amount / people.length).toFixed(2);
+    const resObj = {};
+    people.forEach((n) => {
+      resObj[n] = share;
+    });
+    setResult(resObj);
   };
 
   return (
     <div>
-      <h2>Movie Explorer</h2>
+      <h2>Expense Splitter</h2>
+      <p>Enter names separated by commas and total amount.</p>
       <input
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search movies..."
+        placeholder="Names: Alice, Bob..."
+        value={names}
+        onChange={(e) => setNames(e.target.value)}
+        style={{ width: "100%" }}
       />
-      <button onClick={searchMovies}>Search</button>
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
-        {results.map((movie) => (
-          <div key={movie.imdbID} style={{ margin: "10px" }}>
-            <h4>{movie.Title}</h4>
-            {movie.Poster !== "N/A" && (
-              <img src={movie.Poster} alt={movie.Title} width="100" />
-            )}
-            <button onClick={() => setFavorites((f) => [...f, movie])}>
-              Add to Favorites
-            </button>
-          </div>
-        ))}
-      </div>
-      {favorites.length > 0 && (
-        <div>
-          <h3>Favorites</h3>
-          <ul>
-            {favorites.map((f) => (
-              <li key={f.imdbID}>{f.Title}</li>
-            ))}
-          </ul>
-        </div>
+      <input
+        placeholder="Total amount"
+        value={total}
+        onChange={(e) => setTotal(e.target.value)}
+      />
+      <button onClick={split}>Split</button>
+      {result && (
+        <ul>
+          {Object.entries(result).map(([name, amt]) => (
+            <li key={name}>
+              {name}: {amt}
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );
 }
 
-export default MovieSearch;
+export default ExpenseSplitter;
