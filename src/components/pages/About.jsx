@@ -1,38 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-function DataFetcher({ url }) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState(null);
+function ValidatedForm() {
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
-  useEffect(() => {
-    fetch(url)
-      .then((res) => {
-        if (!res.ok) throw new Error("Network error");
-        return res.json();
-      })
-      .then((json) => setData(json))
-      .catch((e) => setErr(e.message))
-      .finally(() => setLoading(false));
-  }, [url]);
+  const valid = email.includes("@") && email.includes(".");
 
-  if (loading) return <p>Loading…</p>;
-  if (err) return <p>Error: {err}</p>;
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
   return (
     <div>
-      <h3>Data:</h3>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+      <h2>Validation Form</h2>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Email:{" "}
+          <input value={email} onChange={(e) => setEmail(e.target.value)} />
+        </label>
+        <button type="submit">Submit</button>
+      </form>
+      {submitted &&
+        (valid ? (
+          <p style={{ color: "green" }}>Valid email!</p>
+        ) : (
+          <p style={{ color: "red" }}>Invalid email.</p>
+        ))}
     </div>
   );
 }
 
-function FetchApp() {
-  return (
-    <div>
-      <h2>Fetch Example</h2>
-      <DataFetcher url="https://jsonplaceholder.typicode.com/todos/1" />
-    </div>
-  );
-}
-
-export default FetchApp;
+export default ValidatedForm;
