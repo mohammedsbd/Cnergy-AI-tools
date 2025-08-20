@@ -1,52 +1,36 @@
 import React, { useState } from "react";
 
-function ExpenseSplitter() {
-  const [names, setNames] = useState("");
-  const [total, setTotal] = useState("");
-  const [result, setResult] = useState(null);
+function BMI() {
+  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState("");
+  const [bmi, setBmi] = useState(null);
 
-  const split = () => {
-    const people = names
-      .split(",")
-      .map((n) => n.trim())
-      .filter((n) => n);
-    const amount = parseFloat(total);
-    if (!people.length || isNaN(amount)) return;
-    const share = (amount / people.length).toFixed(2);
-    const resObj = {};
-    people.forEach((n) => {
-      resObj[n] = share;
-    });
-    setResult(resObj);
+  const calculate = () => {
+    const h = parseFloat(height) / 100;
+    const w = parseFloat(weight);
+    if (h > 0 && w > 0) {
+      const val = (w / (h * h)).toFixed(1);
+      setBmi(val);
+    }
   };
 
   return (
     <div>
-      <h2>Expense Splitter</h2>
-      <p>Enter names separated by commas and total amount.</p>
+      <h2>BMI Calculator</h2>
       <input
-        placeholder="Names: Alice, Bob..."
-        value={names}
-        onChange={(e) => setNames(e.target.value)}
-        style={{ width: "100%" }}
+        placeholder="Height (cm)"
+        value={height}
+        onChange={(e) => setHeight(e.target.value)}
       />
       <input
-        placeholder="Total amount"
-        value={total}
-        onChange={(e) => setTotal(e.target.value)}
+        placeholder="Weight (kg)"
+        value={weight}
+        onChange={(e) => setWeight(e.target.value)}
       />
-      <button onClick={split}>Split</button>
-      {result && (
-        <ul>
-          {Object.entries(result).map(([name, amt]) => (
-            <li key={name}>
-              {name}: {amt}
-            </li>
-          ))}
-        </ul>
-      )}
+      <button onClick={calculate}>Calculate</button>
+      {bmi && <p>Your BMI is {bmi}</p>}
     </div>
   );
 }
 
-export default ExpenseSplitter;
+export default BMI;
