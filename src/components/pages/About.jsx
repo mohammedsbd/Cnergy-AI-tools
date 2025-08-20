@@ -1,34 +1,23 @@
 import React, { useState } from "react";
+import QRCode from "qrcode.react";
 
-function FilePreviewer() {
-  const [files, setFiles] = useState([]);
-
-  const onDrop = (e) => {
-    e.preventDefault();
-    setFiles(Array.from(e.dataTransfer.files));
-  };
+function QRGenerator() {
+  const [text, setText] = useState("https://example.com");
 
   return (
-    <div
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={onDrop}
-      style={{
-        border: "2px dashed #aaa",
-        padding: "16px",
-        textAlign: "center",
-      }}
-    >
-      <h2>Drag & Drop Files</h2>
-      <p>Drop files here to preview their names.</p>
-      <ul>
-        {files.map((file, i) => (
-          <li key={i}>
-            {file.name} — {Math.round(file.size / 1024)} KB
-          </li>
-        ))}
-      </ul>
+    <div>
+      <h2>QR Code Generator</h2>
+      <input
+        placeholder="Enter text or URL"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        style={{ width: "100%" }}
+      />
+      <div style={{ marginTop: "16px" }}>
+        <QRCode value={text} />
+      </div>
     </div>
   );
 }
 
-export default FilePreviewer;
+export default QRGenerator;
