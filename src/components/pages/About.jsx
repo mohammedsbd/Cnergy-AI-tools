@@ -1,39 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-function ImageSlider({ images }) {
-  const [idx, setIdx] = useState(0);
+function DataFetcher({ url }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState(null);
 
-  const prev = () => setIdx((i) => (i === 0 ? images.length - 1 : i - 1));
-  const next = () => setIdx((i) => (i === images.length - 1 ? 0 : i + 1));
+  useEffect(() => {
+    fetch(url)
+      .then((res) => {
+        if (!res.ok) throw new Error("Network error");
+        return res.json();
+      })
+      .then((json) => setData(json))
+      .catch((e) => setErr(e.message))
+      .finally(() => setLoading(false));
+  }, [url]);
 
+  if (loading) return <p>Loading…</p>;
+  if (err) return <p>Error: {err}</p>;
   return (
     <div>
-      <img
-        src={images[idx]}
-        alt={`Slide ${idx}`}
-        style={{ width: "100%", maxHeight: "300px" }}
-      />
-      <div>
-        <button onClick={prev}>Prev</button>
-        <button onClick={next}>Next</button>
-      </div>
+      <h3>Data:</h3>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
     </div>
   );
 }
 
-function SliderApp() {
-  const imgs = [
-    "https://via.placeholder.com/400x200/111",
-    "https://via.placeholder.com/400x200/222",
-    "https://via.placeholder.com/400x200/333",
-  ];
-
+function FetchApp() {
   return (
     <div>
-      <h2>Image Slider</h2>
-      <ImageSlider images={imgs} />
+      <h2>Fetch Example</h2>
+      <DataFetcher url="https://jsonplaceholder.typicode.com/todos/1" />
     </div>
   );
 }
 
-export default SliderApp;
+export default FetchApp;
