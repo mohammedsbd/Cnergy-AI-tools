@@ -1,51 +1,44 @@
 import React, { useState, useEffect } from "react";
 
-const cities = [
-  { name: "New York", zone: "America/New_York" },
-  { name: "London", zone: "Europe/London" },
-  { name: "Tokyo", zone: "Asia/Tokyo" },
-  { name: "Nairobi", zone: "Africa/Nairobi" },
-  { name: "Addis Ababa", zone: "Africa/Addis_Ababa" },
-];
-
-function WorldClock() {
-  const [times, setTimes] = useState({});
+function DebouncedSearch() {
+  const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [debounced, setDebounced] = useState(query);
 
   useEffect(() => {
-    const update = () => {
-      const now = new Date();
-      const obj = {};
-      cities.forEach((c) => {
-        obj[c.name] = now.toLocaleTimeString("en-US", { timeZone: c.zone });
-      });
-      setTimes(obj);
-    };
-    update();
-    const id = setInterval(update, 1000);
-    return () => clearInterval(id);
-  }, []);
+    const timer = setTimeout(() => setDebounced(query), 500);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  useEffect(() => {
+    if (!debounced) {
+      setSuggestions([]);
+      return;
+    }
+    fetch(
+      `https://en.wikipedia.org/w/api.php?origin=*&action=opensearch&search=${debounced}`
+    )
+      .then((res) => res.json())
+      .then((data) => setSuggestions(data[1]))
+      .catch(() => setSuggestions([]));
+  }, [debounced]);
 
   return (
     <div>
-      <h2>World Clock</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>City</th>
-            <th>Local Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {cities.map((c) => (
-            <tr key={c.name}>
-              <td>{c.name}</td>
-              <td>{times[c.name]}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h2>Wikipedia Search</h2>
+      <input
+        placeholder="Search Wikipedia..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        style={{ width: "100%" }}
+      />
+      <ul>
+        {suggestions.map((s, i) => (
+          <li key={i}>{s}</li>
+        ))}
+      </ul>
     </div>
   );
 }
 
-export default WorldClock;
+export default DebouncedSearch;
