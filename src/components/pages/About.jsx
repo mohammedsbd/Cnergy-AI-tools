@@ -1,48 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { marked } from "marked";
 
-function CurrencyConverter() {
-  const [amount, setAmount] = useState(1);
-  const [rates, setRates] = useState({});
-  const [base, setBase] = useState("USD");
-  const [target, setTarget] = useState("EUR");
-
-  useEffect(() => {
-    fetch("https://api.exchangerate-api.com/v4/latest/USD")
-      .then((res) => res.json())
-      .then((data) => setRates(data.rates))
-      .catch(() => setRates({}));
-  }, []);
-
-  const converted = rates[target]
-    ? ((amount * rates[target]) / rates[base]).toFixed(4)
-    : "—";
+function MarkdownPreviewer() {
+  const [input, setInput] = useState("# Hello, Markdown!");
 
   return (
     <div>
-      <h2>Currency Converter</h2>
-      <input
-        type="number"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
+      <h2>Markdown Previewer</h2>
+      <textarea
+        rows={10}
+        style={{ width: "100%" }}
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
       />
-      <select value={base} onChange={(e) => setBase(e.target.value)}>
-        {Object.keys(rates).map((r) => (
-          <option key={r} value={r}>
-            {r}
-          </option>
-        ))}
-      </select>
-      →
-      <select value={target} onChange={(e) => setTarget(e.target.value)}>
-        {Object.keys(rates).map((r) => (
-          <option key={r} value={r}>
-            {r}
-          </option>
-        ))}
-      </select>
-      <p>Converted: {converted}</p>
+      <h3>Preview:</h3>
+      <div
+        style={{ border: "1px solid #ccc", padding: "8px" }}
+        dangerouslySetInnerHTML={{ __html: marked(input) }}
+      />
     </div>
   );
 }
 
-export default CurrencyConverter;
+export default MarkdownPreviewer;
