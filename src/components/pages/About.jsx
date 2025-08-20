@@ -1,32 +1,31 @@
-import React, { useState } from "react";
-import { Document, Page } from "react-pdf"; // assume react-pdf is installed
+import React, { useState, useEffect } from "react";
 
-function PDFPreviewer() {
-  const [file, setFile] = useState(null);
+function RecipeGenerator() {
+  const [meal, setMeal] = useState(null);
+
+  const fetchMeal = () => {
+    fetch("https://www.themealdb.com/api/json/v1/1/random.php")
+      .then((res) => res.json())
+      .then((data) => setMeal(data.meals[0]))
+      .catch(() => setMeal(null));
+  };
+
+  useEffect(() => {
+    fetchMeal();
+  }, []);
+
+  if (!meal) return <p>Loading...</p>;
 
   return (
     <div>
-      <h2>PDF Thumbnail Previewer</h2>
-      <input
-        type="file"
-        accept="application/pdf"
-        onChange={(e) => setFile(e.target.files[0])}
-      />
-      {file && (
-        <div
-          style={{
-            border: "1px solid #ccc",
-            padding: "10px",
-            marginTop: "10px",
-          }}
-        >
-          <Document file={file}>
-            <Page pageNumber={1} width={300} />
-          </Document>
-        </div>
-      )}
+      <h2>Random Meal</h2>
+      <h3>{meal.strMeal}</h3>
+      <img src={meal.strMealThumb} alt={meal.strMeal} width="300" />
+      <h4>Instructions</h4>
+      <p>{meal.strInstructions}</p>
+      <button onClick={fetchMeal}>Get Another</button>
     </div>
   );
 }
 
-export default PDFPreviewer;
+export default RecipeGenerator;
