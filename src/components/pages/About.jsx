@@ -1,37 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-const text = "The quick brown fox jumps over the lazy dog.";
+function ChatBot() {
+  const [history, setHistory] = useState([]);
 
-function TypingTest() {
-  const [input, setInput] = useState("");
-  const [timeLeft, setTimeLeft] = useState(60);
-  const [started, setStarted] = useState(false);
-
-  useEffect(() => {
-    if (!started || timeLeft <= 0) return;
-
-    const id = setInterval(() => setTimeLeft((t) => t - 1), 1000);
-    return () => clearInterval(id);
-  }, [started, timeLeft]);
-
-  const wpm = (input.trim().split(/\s+/).length / 1).toFixed(1);
+  const ask = () => {
+    const input = prompt("Say something:");
+    if (!input) return;
+    let res = "I didn't get that.";
+    if (input.toLowerCase().includes("hi")) res = "Hello!";
+    if (input.toLowerCase().includes("weather"))
+      res = "I am not a weather app, sorry!";
+    setHistory((h) => [...h, { you: input, bot: res }]);
+  };
 
   return (
     <div>
-      <h2>Typing Speed Test</h2>
-      <p>{text}</p>
-      <textarea
-        rows={4}
-        style={{ width: "100%" }}
-        value={input}
-        disabled={timeLeft <= 0}
-        onFocus={() => !started && setStarted(true)}
-        onChange={(e) => setInput(e.target.value)}
-      />
-      <p>Time Left: {timeLeft}s</p>
-      <p>Words per minute: {timeLeft <= 0 ? wpm : "—"}</p>
+      <h2>Simple Chat Bot</h2>
+      <button onClick={ask}>Talk to Bot</button>
+      <ul>
+        {history.map((h, i) => (
+          <li key={i}>
+            <strong>You:</strong> {h.you}
+            <br />
+            <strong>Bot:</strong> {h.bot}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
 
-export default TypingTest;
+export default ChatBot;
