@@ -1,36 +1,46 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-function Pomodoro() {
-  const [seconds, setSeconds] = useState(1500); // 25 mins
-  const [running, setRunning] = useState(false);
+function HabitTracker() {
+  const [habit, setHabit] = useState("");
+  const [record, setRecord] = useState([]);
 
-  useEffect(() => {
-    if (!running) return;
-    const id = setInterval(() => {
-      setSeconds((s) => (s > 0 ? s - 1 : 0));
-    }, 1000);
-    return () => clearInterval(id);
-  }, [running]);
+  const addHabit = () => {
+    if (!habit.trim()) return;
+    setRecord((r) => [...r, { name: habit.trim(), done: false }]);
+    setHabit("");
+  };
 
-  const reset = () => setSeconds(1500);
-
-  const min = Math.floor(seconds / 60)
-    .toString()
-    .padStart(2, "0");
-  const sec = (seconds % 60).toString().padStart(2, "0");
+  const toggle = (i) => {
+    setRecord((r) =>
+      r.map((h, idx) => (idx === i ? { ...h, done: !h.done } : h))
+    );
+  };
 
   return (
     <div>
-      <h2>Pomodoro Clock</h2>
-      <p style={{ fontSize: "48px" }}>
-        {min}:{sec}
-      </p>
-      <button onClick={() => setRunning((r) => !r)}>
-        {running ? "Pause" : "Start"}
-      </button>
-      <button onClick={reset}>Reset</button>
+      <h2>Habit Tracker</h2>
+      <input
+        value={habit}
+        onChange={(e) => setHabit(e.target.value)}
+        placeholder="New habit"
+      />
+      <button onClick={addHabit}>Add</button>
+      <ul>
+        {record.map((h, i) => (
+          <li
+            key={i}
+            onClick={() => toggle(i)}
+            style={{
+              textDecoration: h.done ? "line-through" : "none",
+              cursor: "pointer",
+            }}
+          >
+            {h.name}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
 
-export default Pomodoro;
+export default HabitTracker;
