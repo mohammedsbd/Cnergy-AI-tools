@@ -1,36 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-function URLShortener() {
-  const [url, setUrl] = useState("");
-  const [short, setShort] = useState("");
+function Pokedex() {
+  const [pokemon, setPokemon] = useState([]);
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState(null);
 
-  const shorten = () => {
-    if (!url.trim()) return;
-    const hash = Math.random().toString(36).substr(2, 6);
-    const result = window.location.origin + "/" + hash;
-    setShort(result);
-  };
+  useEffect(() => {
+    fetch("https://pokeapi.co/api/v2/pokemon?limit=151")
+      .then((res) => res.json())
+      .then((data) => setPokemon(data.results));
+  }, []);
 
   return (
     <div>
-      <h2>URL Shortener (Mock)</h2>
+      <h2>Pokédex Explorer</h2>
       <input
-        placeholder="Enter URL"
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-        style={{ width: "80%" }}
+        placeholder="Search Pokémon..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
       />
-      <button onClick={shorten}>Shorten</button>
-      {short && (
-        <p>
-          <strong>Shortened URL:</strong>{" "}
-          <a href={short} target="_blank" rel="noopener noreferrer">
-            {short}
-          </a>
-        </p>
+      <ul>
+        {pokemon
+          .filter((p) => p.name.includes(search.toLowerCase()))
+          .map((p, i) => (
+            <li
+              key={i}
+              onClick={() =>
+                fetch(p.url)
+                  .then((res) => res.json())
+                  .then((data) => setSelected(data))
+              }
+            >
+              {p.name}
+            </li>
+          ))}
+      </ul>
+      {selected && (
+        <div>
+          <h3>{selected.name}</h3>
+          <img src={selected.sprites.front_default} alt={selected.name} />
+          <p>
+            Height: {selected.height} | Weight: {selected.weight}
+          </p>
+        </div>
       )}
     </div>
   );
 }
 
-export default URLShortener;
+export default Pokedex;
