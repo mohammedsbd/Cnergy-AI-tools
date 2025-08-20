@@ -1,25 +1,34 @@
 import React, { useState } from "react";
-import { marked } from "marked";
 
-function MarkdownPreviewer() {
-  const [input, setInput] = useState("# Hello, Markdown!");
+function FilePreviewer() {
+  const [files, setFiles] = useState([]);
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    setFiles(Array.from(e.dataTransfer.files));
+  };
 
   return (
-    <div>
-      <h2>Markdown Previewer</h2>
-      <textarea
-        rows={10}
-        style={{ width: "100%" }}
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-      />
-      <h3>Preview:</h3>
-      <div
-        style={{ border: "1px solid #ccc", padding: "8px" }}
-        dangerouslySetInnerHTML={{ __html: marked(input) }}
-      />
+    <div
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={onDrop}
+      style={{
+        border: "2px dashed #aaa",
+        padding: "16px",
+        textAlign: "center",
+      }}
+    >
+      <h2>Drag & Drop Files</h2>
+      <p>Drop files here to preview their names.</p>
+      <ul>
+        {files.map((file, i) => (
+          <li key={i}>
+            {file.name} — {Math.round(file.size / 1024)} KB
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
 
-export default MarkdownPreviewer;
+export default FilePreviewer;
