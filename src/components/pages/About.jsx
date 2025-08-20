@@ -1,31 +1,78 @@
 import React, { useState } from "react";
 
-function SurveyBuilder() {
-  const [questions, setQuestions] = useState([]);
-  const [qText, setQText] = useState("");
+function GitHubExplorer() {
+  const [username, setUsername] = useState("");
+  const [repos, setRepos] = useState([]);
+  const [issues, setIssues] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const addQuestion = () => {
-    if (!qText.trim()) return;
-    setQuestions((q) => [...q, { text: qText.trim(), id: Date.now() }]);
-    setQText("");
+  const fetchRepos = async () => {
+    if (!username.trim()) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`https://api.github.com/users/${username}/repos`);
+      const data = await res.json();
+      setRepos(data);
+      setIssues([]);
+    } catch {
+      setRepos([]);
+    }
+    setLoading(false);
+  };
+
+  const fetchIssues = async (repo) => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `https://api.github.com/repos/${username}/${repo}/issues`
+      );
+      const data = await res.json();
+      setIssues(data);
+    } catch {
+      setIssues([]);
+    }
+    setLoading(false);
   };
 
   return (
     <div>
-      <h2>Survey Builder</h2>
+      <h2>GitHub Repo Explorer</h2>
       <input
-        value={qText}
-        onChange={(e) => setQText(e.target.value)}
-        placeholder="New question"
+        placeholder="GitHub username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
       />
-      <button onClick={addQuestion}>Add</button>
-      <ol>
-        {questions.map((q) => (
-          <li key={q.id}>{q.text}</li>
-        ))}
-      </ol>
+      <button onClick={fetchRepos} disabled={loading}>
+        {loading ? "Loading repos..." : "Fetch Repositories"}
+      </button>
+      <div style={{ display: "flex", marginTop: "20px" }}>
+        <div style={{ flex: 1, marginRight: "20px" }}>
+          <h3>Repositories</h3>
+          <ul>
+            {repos.map((repo) => (
+              <li
+                key={repo.id}
+                onClick={() => fetchIssues(repo.name)}
+                style={{ cursor: "pointer" }}
+              >
+                {repo.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div style={{ flex: 1 }}>
+          <h3>Issues</h3>
+          <ul>
+            {issues.map((issue) => (
+              <li key={issue.id}>
+                <strong>{issue.title}</strong>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
 
-export default SurveyBuilder;
+export default GitHubExplorer;
