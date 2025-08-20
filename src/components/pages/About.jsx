@@ -1,51 +1,50 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-function Pokedex() {
-  const [pokemon, setPokemon] = useState([]);
-  const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState(null);
+function MovieSearch() {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  const [favorites, setFavorites] = useState([]);
 
-  useEffect(() => {
-    fetch("https://pokeapi.co/api/v2/pokemon?limit=151")
+  const searchMovies = () => {
+    fetch(`https://www.omdbapi.com/?apikey=YOUR_KEY&s=${query}`)
       .then((res) => res.json())
-      .then((data) => setPokemon(data.results));
-  }, []);
+      .then((data) => setResults(data.Search || []));
+  };
 
   return (
     <div>
-      <h2>Pokédex Explorer</h2>
+      <h2>Movie Explorer</h2>
       <input
-        placeholder="Search Pokémon..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search movies..."
       />
-      <ul>
-        {pokemon
-          .filter((p) => p.name.includes(search.toLowerCase()))
-          .map((p, i) => (
-            <li
-              key={i}
-              onClick={() =>
-                fetch(p.url)
-                  .then((res) => res.json())
-                  .then((data) => setSelected(data))
-              }
-            >
-              {p.name}
-            </li>
-          ))}
-      </ul>
-      {selected && (
+      <button onClick={searchMovies}>Search</button>
+      <div style={{ display: "flex", flexWrap: "wrap" }}>
+        {results.map((movie) => (
+          <div key={movie.imdbID} style={{ margin: "10px" }}>
+            <h4>{movie.Title}</h4>
+            {movie.Poster !== "N/A" && (
+              <img src={movie.Poster} alt={movie.Title} width="100" />
+            )}
+            <button onClick={() => setFavorites((f) => [...f, movie])}>
+              Add to Favorites
+            </button>
+          </div>
+        ))}
+      </div>
+      {favorites.length > 0 && (
         <div>
-          <h3>{selected.name}</h3>
-          <img src={selected.sprites.front_default} alt={selected.name} />
-          <p>
-            Height: {selected.height} | Weight: {selected.weight}
-          </p>
+          <h3>Favorites</h3>
+          <ul>
+            {favorites.map((f) => (
+              <li key={f.imdbID}>{f.Title}</li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
   );
 }
 
-export default Pokedex;
+export default MovieSearch;
