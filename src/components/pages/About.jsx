@@ -1,33 +1,62 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-function ChatBot() {
-  const [history, setHistory] = useState([]);
+function MemoryGame() {
+  const cards = ["🍎", "🍌", "🍒", "🍇", "🍉", "🍓"];
+  const [deck, setDeck] = useState([]);
+  const [selected, setSelected] = useState([]);
 
-  const ask = () => {
-    const input = prompt("Say something:");
-    if (!input) return;
-    let res = "I didn't get that.";
-    if (input.toLowerCase().includes("hi")) res = "Hello!";
-    if (input.toLowerCase().includes("weather"))
-      res = "I am not a weather app, sorry!";
-    setHistory((h) => [...h, { you: input, bot: res }]);
+  useEffect(() => {
+    const shuffled = [...cards, ...cards]
+      .sort(() => 0.5 - Math.random())
+      .map((c, i) => ({ id: i, val: c, matched: false }));
+    setDeck(shuffled);
+  }, []);
+
+  const flip = (card) => {
+    if (selected.length === 2) return;
+    setSelected((s) => [...s, card]);
+    if (selected.length === 1) {
+      setTimeout(() => {
+        const [a, b] = [selected[0], card];
+        if (a.val === b.val) {
+          setDeck((d) =>
+            d.map((c) => (c.val === a.val ? { ...c, matched: true } : c))
+          );
+        }
+        setSelected([]);
+      }, 1000);
+    }
   };
 
   return (
     <div>
-      <h2>Simple Chat Bot</h2>
-      <button onClick={ask}>Talk to Bot</button>
-      <ul>
-        {history.map((h, i) => (
-          <li key={i}>
-            <strong>You:</strong> {h.you}
-            <br />
-            <strong>Bot:</strong> {h.bot}
-          </li>
+      <h2>Memory Game</h2>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: "8px",
+        }}
+      >
+        {deck.map((card) => (
+          <div
+            key={card.id}
+            onClick={() => !card.matched && flip(card)}
+            style={{
+              padding: "16px",
+              textAlign: "center",
+              background:
+                card.matched || selected.includes(card) ? "#fff" : "#888",
+              fontSize: "24px",
+              cursor: "pointer",
+            }}
+          >
+            {card.matched || selected.includes(card) ? card.val : "❓"}
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
 
-export default ChatBot;
+export default MemoryGame;
