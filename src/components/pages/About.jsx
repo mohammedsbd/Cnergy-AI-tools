@@ -1,62 +1,30 @@
 import React, { useState, useEffect } from "react";
 
-function MemoryGame() {
-  const cards = ["🍎", "🍌", "🍒", "🍇", "🍉", "🍓"];
-  const [deck, setDeck] = useState([]);
-  const [selected, setSelected] = useState([]);
+function NewYearCountdown() {
+  const calculate = () => {
+    const now = new Date();
+    const next = new Date(now.getFullYear() + 1, 0, 1);
+    const diff = next - now;
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hrs = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const mins = Math.floor((diff / (1000 * 60)) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+    return `${days}d ${hrs}h ${mins}m ${secs}s`;
+  };
+
+  const [time, setTime] = useState(calculate());
 
   useEffect(() => {
-    const shuffled = [...cards, ...cards]
-      .sort(() => 0.5 - Math.random())
-      .map((c, i) => ({ id: i, val: c, matched: false }));
-    setDeck(shuffled);
+    const id = setInterval(() => setTime(calculate()), 1000);
+    return () => clearInterval(id);
   }, []);
-
-  const flip = (card) => {
-    if (selected.length === 2) return;
-    setSelected((s) => [...s, card]);
-    if (selected.length === 1) {
-      setTimeout(() => {
-        const [a, b] = [selected[0], card];
-        if (a.val === b.val) {
-          setDeck((d) =>
-            d.map((c) => (c.val === a.val ? { ...c, matched: true } : c))
-          );
-        }
-        setSelected([]);
-      }, 1000);
-    }
-  };
 
   return (
     <div>
-      <h2>Memory Game</h2>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "8px",
-        }}
-      >
-        {deck.map((card) => (
-          <div
-            key={card.id}
-            onClick={() => !card.matched && flip(card)}
-            style={{
-              padding: "16px",
-              textAlign: "center",
-              background:
-                card.matched || selected.includes(card) ? "#fff" : "#888",
-              fontSize: "24px",
-              cursor: "pointer",
-            }}
-          >
-            {card.matched || selected.includes(card) ? card.val : "❓"}
-          </div>
-        ))}
-      </div>
+      <h2>Countdown to New Year</h2>
+      <p style={{ fontSize: "24px" }}>{time}</p>
     </div>
   );
 }
 
-export default MemoryGame;
+export default NewYearCountdown;
