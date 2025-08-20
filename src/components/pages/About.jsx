@@ -1,35 +1,36 @@
 import React, { useState } from "react";
 
-function DomainGenerator() {
-  const [word, setWord] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+function CodeEditor() {
+  const [code, setCode] = useState(
+    "// Write JS code here\nconsole.log('Hello, world!');"
+  );
+  const [output, setOutput] = useState("");
 
-  const generate = () => {
-    if (!word.trim()) return;
-    const ext = [".com", ".net", ".io", ".dev"];
-    setSuggestions(ext.map((e) => word.trim().toLowerCase() + e));
+  const run = () => {
+    try {
+      // eslint-disable-next-line no-eval
+      const result = eval(code);
+      setOutput(String(result));
+    } catch (e) {
+      setOutput(e.message);
+    }
   };
 
   return (
     <div>
-      <h2>Domain Suggestions</h2>
-      <input
-        placeholder="Enter base word"
-        value={word}
-        onChange={(e) => setWord(e.target.value)}
+      <h2>Mini Code Editor</h2>
+      <textarea
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+        rows={10}
+        style={{ width: "100%" }}
       />
-      <button onClick={generate}>Generate</button>
-      <ul>
-        {suggestions.map((d, i) => (
-          <li key={i}>
-            <a href={`http://${d}`} target="_blank" rel="noopener noreferrer">
-              {d}
-            </a>
-          </li>
-        ))}
-      </ul>
+      <button onClick={run}>Run</button>
+      <pre style={{ background: "#f0f0f0", padding: "8px", marginTop: "12px" }}>
+        {output}
+      </pre>
     </div>
   );
 }
 
-export default DomainGenerator;
+export default CodeEditor;
