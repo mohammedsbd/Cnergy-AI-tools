@@ -1,30 +1,31 @@
 import React, { useState } from "react";
 
-function SearchList() {
-  const items = ["Apple", "Banana", "Cherry", "Date", "Fig", "Grape"];
-  const [query, setQuery] = useState("");
-
-  const filtered = items.filter((item) =>
-    item.toLowerCase().includes(query.toLowerCase())
-  );
+function StyledButton({ children }) {
+  const [active, setActive] = useState(false);
 
   return (
+    <button
+      onClick={() => setActive((a) => !a)}
+      style={{
+        padding: "10px 20px",
+        backgroundColor: active ? "green" : "gray",
+        color: "white",
+        border: 0,
+        borderRadius: "4px",
+      }}
+    >
+      {children} ({active ? "On" : "Off"})
+    </button>
+  );
+}
+
+function StyledApp() {
+  return (
     <div>
-      <h2>Search List</h2>
-      <input
-        type="text"
-        placeholder="Search…"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
-      <ul>
-        {filtered.map((item, idx) => (
-          <li key={idx}>{item}</li>
-        ))}
-        {filtered.length === 0 && <li>No results found.</li>}
-      </ul>
+      <h2>Styled Button</h2>
+      <StyledButton>Toggle Me</StyledButton>
     </div>
   );
 }
 
-export default SearchList;
+export default StyledApp;
