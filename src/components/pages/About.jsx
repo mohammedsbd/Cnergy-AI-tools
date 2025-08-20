@@ -1,34 +1,30 @@
 import React, { useState } from "react";
 
-function ValidatedForm() {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+function SearchList() {
+  const items = ["Apple", "Banana", "Cherry", "Date", "Fig", "Grape"];
+  const [query, setQuery] = useState("");
 
-  const valid = email.includes("@") && email.includes(".");
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSubmitted(true);
-  };
+  const filtered = items.filter((item) =>
+    item.toLowerCase().includes(query.toLowerCase())
+  );
 
   return (
     <div>
-      <h2>Validation Form</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Email:{" "}
-          <input value={email} onChange={(e) => setEmail(e.target.value)} />
-        </label>
-        <button type="submit">Submit</button>
-      </form>
-      {submitted &&
-        (valid ? (
-          <p style={{ color: "green" }}>Valid email!</p>
-        ) : (
-          <p style={{ color: "red" }}>Invalid email.</p>
+      <h2>Search List</h2>
+      <input
+        type="text"
+        placeholder="Search…"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      <ul>
+        {filtered.map((item, idx) => (
+          <li key={idx}>{item}</li>
         ))}
+        {filtered.length === 0 && <li>No results found.</li>}
+      </ul>
     </div>
   );
 }
 
-export default ValidatedForm;
+export default SearchList;
