@@ -1,24 +1,34 @@
 import React, { useState } from "react";
 
-function DiceRoller() {
-  const [dice, setDice] = useState([1, 1]);
+function QuoteGenerator() {
+  const [quote, setQuote] = useState({ text: "", author: "" });
+  const [loading, setLoading] = useState(false);
 
-  const roll = () => {
-    setDice([
-      Math.floor(Math.random() * 6) + 1,
-      Math.floor(Math.random() * 6) + 1,
-    ]);
+  const fetchQuote = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("https://api.quotable.io/random");
+      const data = await res.json();
+      setQuote({ text: data.content, author: data.author });
+    } catch {
+      setQuote({ text: "Could not fetch quote.", author: "" });
+    }
+    setLoading(false);
   };
 
   return (
     <div>
-      <h2>Dice Roller</h2>
-      <div style={{ fontSize: "64px" }}>
-        <span>🎲{dice[0]}</span> <span>🎲{dice[1]}</span>
-      </div>
-      <button onClick={roll}>Roll</button>
+      <h2>Random Quote</h2>
+      <button onClick={fetchQuote} disabled={loading}>
+        {loading ? "Loading..." : "Get Quote"}
+      </button>
+      {quote.text && (
+        <blockquote>
+          “{quote.text}” <footer>— {quote.author}</footer>
+        </blockquote>
+      )}
     </div>
   );
 }
 
-export default DiceRoller;
+export default QuoteGenerator;
