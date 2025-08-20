@@ -1,44 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { Document, Page } from "react-pdf"; // assume react-pdf is installed
 
-function DebouncedSearch() {
-  const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
-  const [debounced, setDebounced] = useState(query);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDebounced(query), 500);
-    return () => clearTimeout(timer);
-  }, [query]);
-
-  useEffect(() => {
-    if (!debounced) {
-      setSuggestions([]);
-      return;
-    }
-    fetch(
-      `https://en.wikipedia.org/w/api.php?origin=*&action=opensearch&search=${debounced}`
-    )
-      .then((res) => res.json())
-      .then((data) => setSuggestions(data[1]))
-      .catch(() => setSuggestions([]));
-  }, [debounced]);
+function PDFPreviewer() {
+  const [file, setFile] = useState(null);
 
   return (
     <div>
-      <h2>Wikipedia Search</h2>
+      <h2>PDF Thumbnail Previewer</h2>
       <input
-        placeholder="Search Wikipedia..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        style={{ width: "100%" }}
+        type="file"
+        accept="application/pdf"
+        onChange={(e) => setFile(e.target.files[0])}
       />
-      <ul>
-        {suggestions.map((s, i) => (
-          <li key={i}>{s}</li>
-        ))}
-      </ul>
+      {file && (
+        <div
+          style={{
+            border: "1px solid #ccc",
+            padding: "10px",
+            marginTop: "10px",
+          }}
+        >
+          <Document file={file}>
+            <Page pageNumber={1} width={300} />
+          </Document>
+        </div>
+      )}
     </div>
   );
 }
 
-export default DebouncedSearch;
+export default PDFPreviewer;
