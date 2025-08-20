@@ -1,31 +1,36 @@
 import React, { useState } from "react";
+import CounterLogger from "./CounterLogger";
+import TabsApp from "./TabsApp";
+import FetchApp from "./FetchApp";
 
-function StyledButton({ children }) {
-  const [active, setActive] = useState(false);
+function MiniApp() {
+  const sections = ["Counter", "Tabs", "Fetch"];
+  const [sel, setSel] = useState(sections[0]);
 
-  return (
-    <button
-      onClick={() => setActive((a) => !a)}
-      style={{
-        padding: "10px 20px",
-        backgroundColor: active ? "green" : "gray",
-        color: "white",
-        border: 0,
-        borderRadius: "4px",
-      }}
-    >
-      {children} ({active ? "On" : "Off"})
-    </button>
-  );
-}
-
-function StyledApp() {
   return (
     <div>
-      <h2>Styled Button</h2>
-      <StyledButton>Toggle Me</StyledButton>
+      <h1>Mini Combined App</h1>
+      <div>
+        {sections.map((s) => (
+          <button
+            key={s}
+            onClick={() => setSel(s)}
+            style={{
+              fontWeight: s === sel ? "bold" : "normal",
+              marginRight: "8px",
+            }}
+          >
+            {s}
+          </button>
+        ))}
+      </div>
+      <div style={{ marginTop: "20px" }}>
+        {sel === "Counter" && <CounterLogger />}
+        {sel === "Tabs" && <TabsApp />}
+        {sel === "Fetch" && <FetchApp />}
+      </div>
     </div>
   );
 }
 
-export default StyledApp;
+export default MiniApp;
