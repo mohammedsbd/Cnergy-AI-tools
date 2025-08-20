@@ -1,43 +1,18 @@
 import React, { useState } from "react";
 
-function LyricsFinder() {
-  const [artist, setArtist] = useState("");
-  const [title, setTitle] = useState("");
-  const [lyrics, setLyrics] = useState("");
-  const [loading, setLoading] = useState(false);
+function AvatarGenerator() {
+  const [seed, setSeed] = useState(Math.random());
+  const generate = () => setSeed(Math.random());
 
-  const fetchLyrics = async () => {
-    if (!artist || !title) return;
-    setLoading(true);
-    try {
-      const res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${title}`);
-      const data = await res.json();
-      setLyrics(data.lyrics || "No lyrics found.");
-    } catch {
-      setLyrics("Error fetching lyrics.");
-    }
-    setLoading(false);
-  };
+  const url = `https://avatars.dicebear.com/api/human/${seed}.svg`;
 
   return (
     <div>
-      <h2>Lyrics Finder</h2>
-      <input
-        placeholder="Artist"
-        value={artist}
-        onChange={(e) => setArtist(e.target.value)}
-      />
-      <input
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <button onClick={fetchLyrics} disabled={loading || !artist || !title}>
-        {loading ? "Searching..." : "Fetch Lyrics"}
-      </button>
-      {lyrics && <pre style={{ marginTop: "12px" }}>{lyrics}</pre>}
+      <h2>Avatar Generator</h2>
+      <img src={url} alt="Avatar" width="200" height="200" />
+      <button onClick={generate}>New Avatar</button>
     </div>
   );
 }
 
-export default LyricsFinder;
+export default AvatarGenerator;
