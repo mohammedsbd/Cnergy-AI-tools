@@ -1,34 +1,49 @@
 import React, { useState } from "react";
 
-function Star({ filled, onClick }) {
-  return (
-    <span
-      style={{ cursor: "pointer", color: filled ? "gold" : "gray" }}
-      onClick={onClick}
-    >
-      ★
-    </span>
-  );
-}
+function WeatherWidget() {
+  const [city, setCity] = useState("");
+  const [weather, setWeather] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-function StarRating({ totalStars = 5 }) {
-  const [rating, setRating] = useState(0);
+  const fetchWeather = async () => {
+    if (!city.trim()) return;
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=YOUR_API_KEY&units=metric`
+      );
+      const data = await res.json();
+      setWeather(data);
+    } catch {
+      setWeather(null);
+    }
+    setLoading(false);
+  };
 
   return (
     <div>
-      <h2>Rate:</h2>
-      <div>
-        {[...Array(totalStars)].map((_, i) => (
-          <Star key={i} filled={i < rating} onClick={() => setRating(i + 1)} />
-        ))}
-      </div>
-      {rating > 0 && (
-        <p>
-          Your rating: {rating} star{rating > 1 ? "s" : ""}
-        </p>
+      <h2>Weather Finder</h2>
+      <input
+        placeholder="Enter city"
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+      />
+      <button onClick={fetchWeather} disabled={loading}>
+        {loading ? "Loading…" : "Get Weather"}
+      </button>
+      {weather && weather.main && (
+        <div>
+          <p>
+            <strong>
+              {weather.name}, {weather.sys.country}
+            </strong>
+          </p>
+          <p>Temperature: {weather.main.temp}°C</p>
+          <p>Conditions: {weather.weather[0].description}</p>
+        </div>
       )}
     </div>
   );
 }
 
-export default StarRating;
+export default WeatherWidget;
