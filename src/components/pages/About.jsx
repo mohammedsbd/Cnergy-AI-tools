@@ -1,45 +1,53 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-function CounterLogger() {
-  const [count, setCount] = useState(0);
-  const [log, setLog] = useState([]);
-  const [running, setRunning] = useState(false);
+function TodoApp() {
+  const [tasks, setTasks] = useState([
+    { id: 1, text: "Buy milk", done: false },
+    { id: 2, text: "Write JSX", done: false },
+  ]);
+  const [input, setInput] = useState("");
 
-  useEffect(() => {
-    if (!running) return;
-    const id = setInterval(() => {
-      setCount((c) => {
-        const next = c + 1;
-        setLog((l) => [...l, next]);
-        return next;
-      });
-    }, 1000);
-    return () => clearInterval(id);
-  }, [running]);
+  const addTask = () => {
+    if (!input.trim()) return;
+    setTasks((t) => [
+      ...t,
+      { id: Date.now(), text: input.trim(), done: false },
+    ]);
+    setInput("");
+  };
 
-  const reset = () => {
-    setRunning(false);
-    setCount(0);
-    setLog([]);
+  const toggle = (id) => {
+    setTasks((t) =>
+      t.map((task) => (task.id === id ? { ...task, done: !task.done } : task))
+    );
+  };
+
+  const remove = (id) => {
+    setTasks((t) => t.filter((task) => task.id !== id));
   };
 
   return (
     <div>
-      <h2>Counter Logger</h2>
-      <p>Count: {count}</p>
-      <p>Status: {running ? "Running" : "Stopped"}</p>
-      <button onClick={() => setRunning((r) => !r)}>
-        {running ? "Pause" : "Start"}
-      </button>
-      <button onClick={reset}>Reset</button>
-      <h3>Log</h3>
+      <h2>Todo App</h2>
+      <input
+        type="text"
+        value={input}
+        placeholder="New task"
+        onChange={(e) => setInput(e.target.value)}
+      />
+      <button onClick={addTask}>Add</button>
       <ul>
-        {log.map((val, idx) => (
-          <li key={idx}>{val}</li>
+        {tasks.map(({ id, text, done }) => (
+          <li key={id} style={{ textDecoration: done ? "line-through" : "" }}>
+            <span onClick={() => toggle(id)} style={{ cursor: "pointer" }}>
+              {text}
+            </span>
+            <button onClick={() => remove(id)}>Delete</button>
+          </li>
         ))}
       </ul>
     </div>
   );
 }
 
-export default CounterLogger;
+export default TodoApp;
