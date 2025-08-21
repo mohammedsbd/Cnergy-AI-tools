@@ -1,31 +1,32 @@
 import React from "react";
 
-const RecipeHero = ({ title, imageUrl, prepTime, cookTime, servings }) => {
+const IngredientsList = ({ ingredients }) => {
   return (
-    <div
-      className="relative w-full h-[60vh] bg-cover bg-center overflow-hidden"
-      style={{ backgroundImage: `url(${imageUrl})` }}
-    >
-      <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center p-8">
-        <div className="text-center text-white">
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-4">
-            {title}
-          </h1>
-          <div className="flex justify-center items-center text-lg space-x-6">
-            <span className="flex items-center">
-              <span className="mr-2 text-2xl">⏱️</span> Prep: {prepTime}
-            </span>
-            <span className="flex items-center">
-              <span className="mr-2 text-2xl">🍳</span> Cook: {cookTime}
-            </span>
-            <span className="flex items-center">
-              <span className="mr-2 text-2xl">🍽️</span> Servings: {servings}
-            </span>
-          </div>
-        </div>
-      </div>
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      <h2 className="text-3xl font-bold text-gray-900 mb-4 border-b-2 pb-2">
+        Ingredients
+      </h2>
+      <ul className="list-none space-y-3">
+        {ingredients.map((ingredient, index) => (
+          <li key={index} className="flex items-start">
+            <div className="flex items-center h-5">
+              <input
+                id={`ingredient-${index}`}
+                type="checkbox"
+                className="h-4 w-4 text-blue-600 rounded"
+              />
+            </div>
+            <label
+              htmlFor={`ingredient-${index}`}
+              className="ml-3 text-lg text-gray-700"
+            >
+              {ingredient}
+            </label>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
 
-export default RecipeHero;
+export default IngredientsList;
