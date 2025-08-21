@@ -1,75 +1,32 @@
-import React, { useRef } from "react";
+import React from "react";
 
-const RelatedArticlesScroll = ({ articles }) => {
-  const scrollRef = useRef(null);
-
-  const scroll = (direction) => {
-    if (scrollRef.current) {
-      const scrollAmount = 300; // Adjust as needed
-      scrollRef.current.scrollBy({
-        left: direction * scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  };
-
+const LivePollResults = ({ question, options, totalVotes }) => {
   return (
-    <div className="relative">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-2xl font-bold text-gray-900">Related Articles</h3>
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      <h3 className="text-xl font-bold text-gray-900 mb-4">{question}</h3>
+      <div className="space-y-4">
+        {options.map((option, index) => {
+          const percentage =
+            totalVotes > 0 ? (option.votes / totalVotes) * 100 : 0;
+          return (
+            <div key={index}>
+              <div className="flex justify-between items-center text-gray-800 font-semibold">
+                <span>{option.text}</span>
+                <span>{percentage.toFixed(1)}%</span>
+              </div>
+              <div className="mt-2 bg-gray-200 rounded-full h-4">
+                <div
+                  className="bg-blue-600 h-4 rounded-full transition-all duration-700 ease-out"
+                  style={{ width: `${percentage}%` }}
+                ></div>
+              </div>
+            </div>
+          );
+        })}
       </div>
-      <div
-        className="flex overflow-x-auto scrollbar-hide space-x-4 p-2"
-        ref={scrollRef}
-      >
-        {articles.map((article, index) => (
-          <div key={index} className="flex-none w-80">
-            <FeaturedArticleCard article={article} />
-          </div>
-        ))}
-      </div>
-      <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 flex justify-between px-2">
-        <button
-          onClick={() => scroll(-1)}
-          className="bg-gray-800 bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </button>
-        <button
-          onClick={() => scroll(1)}
-          className="bg-gray-800 bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
-      </div>
+      <p className="text-sm text-gray-500 mt-4">Total votes: {totalVotes}</p>
     </div>
   );
 };
 
-export default RelatedArticlesScroll;
+export default LivePollResults;
