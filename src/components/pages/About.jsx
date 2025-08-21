@@ -1,26 +1,16 @@
 import React from "react";
 
-const TopStoryBanner = ({ headline, summary, imageUrl, category, link }) => {
+const CompactArticleCard = ({ title, date, link }) => {
   return (
-    <div
-      className="relative w-full h-96 bg-cover bg-center overflow-hidden"
-      style={{ backgroundImage: `url(${imageUrl})` }}
-    >
-      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-end">
-        <div className="p-8 text-white max-w-2xl">
-          <span className="text-xs font-semibold uppercase tracking-wide bg-red-600 px-2 py-1 rounded-full">
-            {category}
-          </span>
-          <a href={link} className="block mt-4">
-            <h1 className="text-3xl md:text-5xl font-bold leading-tight hover:underline">
-              {headline}
-            </h1>
-          </a>
-          <p className="text-lg mt-2 opacity-90">{summary}</p>
-        </div>
-      </div>
+    <div className="p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
+      <a href={link} className="block">
+        <h3 className="text-lg font-semibold text-gray-900 leading-snug hover:text-blue-600">
+          {title}
+        </h3>
+        <p className="text-sm text-gray-500 mt-1">{date}</p>
+      </a>
     </div>
   );
 };
 
-export default TopStoryBanner;
+export default CompactArticleCard;
