@@ -1,32 +1,32 @@
 import React from "react";
 
-const LivePollResults = ({ question, options, totalVotes }) => {
+const TrendingTopics = ({ topics }) => {
+  const getFontSize = (count) => {
+    // Scale font size based on a topic's count for visual impact
+    if (count > 20) return "text-3xl";
+    if (count > 15) return "text-2xl";
+    if (count > 10) return "text-xl";
+    return "text-lg";
+  };
+
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h3 className="text-xl font-bold text-gray-900 mb-4">{question}</h3>
-      <div className="space-y-4">
-        {options.map((option, index) => {
-          const percentage =
-            totalVotes > 0 ? (option.votes / totalVotes) * 100 : 0;
-          return (
-            <div key={index}>
-              <div className="flex justify-between items-center text-gray-800 font-semibold">
-                <span>{option.text}</span>
-                <span>{percentage.toFixed(1)}%</span>
-              </div>
-              <div className="mt-2 bg-gray-200 rounded-full h-4">
-                <div
-                  className="bg-blue-600 h-4 rounded-full transition-all duration-700 ease-out"
-                  style={{ width: `${percentage}%` }}
-                ></div>
-              </div>
-            </div>
-          );
-        })}
+    <div className="bg-gray-100 p-6 rounded-lg shadow-md">
+      <h3 className="text-2xl font-bold text-gray-800 mb-4">Trending Topics</h3>
+      <div className="flex flex-wrap gap-4 justify-center">
+        {topics.map((topic, index) => (
+          <a
+            key={index}
+            href={`/search?q=${topic.name}`}
+            className={`font-semibold text-gray-700 hover:text-blue-600 transition-colors duration-200 ${getFontSize(
+              topic.count
+            )}`}
+          >
+            {topic.name}
+          </a>
+        ))}
       </div>
-      <p className="text-sm text-gray-500 mt-4">Total votes: {totalVotes}</p>
     </div>
   );
 };
 
-export default LivePollResults;
+export default TrendingTopics;
