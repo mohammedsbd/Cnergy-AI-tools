@@ -1,41 +1,45 @@
 import React, { useState } from "react";
 
-const ArticleRating = ({ articleId }) => {
-  const [rating, setRating] = useState(0);
-  const [hoverRating, setHoverRating] = useState(0);
-  const [isRated, setIsRated] = useState(false);
-
-  const handleRating = (star) => {
-    setRating(star);
-    setIsRated(true);
-    console.log(`User rated article ${articleId} with ${star} stars.`);
-  };
+const PhotoGallery = ({ photos }) => {
+  const [selectedImage, setSelectedImage] = useState(null);
 
   return (
-    <div className="bg-gray-100 p-4 rounded-lg text-center">
-      <h4 className="font-semibold text-gray-800 mb-2">Rate this article:</h4>
-      <div className="flex justify-center space-x-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <span
-            key={star}
-            onMouseEnter={() => setHoverRating(star)}
-            onMouseLeave={() => setHoverRating(0)}
-            onClick={() => handleRating(star)}
-            className={`text-2xl cursor-pointer transition-colors duration-200 ${
-              (hoverRating || rating) >= star
-                ? "text-yellow-400"
-                : "text-gray-300"
-            }`}
-          >
-            ★
-          </span>
+    <div>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {photos.map((photo, index) => (
+          <img
+            key={index}
+            src={photo.thumbnailUrl}
+            alt={photo.caption}
+            onClick={() => setSelectedImage(photo)}
+            className="w-full h-auto rounded-lg cursor-pointer object-cover transform hover:scale-105 transition-transform duration-200"
+          />
         ))}
       </div>
-      {isRated && (
-        <p className="text-sm text-gray-600 mt-2">Thanks for your feedback!</p>
+      {selectedImage && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50">
+          <button
+            onClick={() => setSelectedImage(null)}
+            className="absolute top-4 right-4 text-white text-3xl font-bold"
+          >
+            &times;
+          </button>
+          <div className="flex flex-col items-center">
+            <img
+              src={selectedImage.fullUrl}
+              alt={selectedImage.caption}
+              className="max-h-full max-w-full rounded-lg"
+            />
+            {selectedImage.caption && (
+              <p className="text-white text-center mt-4">
+                {selectedImage.caption}
+              </p>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
 };
 
-export default ArticleRating;
+export default PhotoGallery;
