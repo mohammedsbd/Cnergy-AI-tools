@@ -1,33 +1,56 @@
 import React, { useState } from "react";
 
-const ServiceTabs = ({ services }) => {
-  const [activeTab, setActiveTab] = useState(0);
+const DataDashboard = () => {
+  const [selectedMetric, setSelectedMetric] = useState("traffic");
+
+  const handleMetricChange = (e) => {
+    setSelectedMetric(e.target.value);
+  };
+
+  const getChartData = () => {
+    // In a real app, this would fetch data from an API
+    switch (selectedMetric) {
+      case "traffic":
+        return [100, 200, 150, 300, 250];
+      case "engagement":
+        return [50, 75, 60, 90, 85];
+      case "conversions":
+        return [10, 15, 12, 20, 18];
+      default:
+        return [];
+    }
+  };
+
+  const chartData = getChartData();
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-lg max-w-4xl mx-auto">
-      <div className="flex border-b border-gray-200 mb-6">
-        {services.map((service, index) => (
-          <button
+    <div className="bg-gray-800 text-white rounded-lg p-8 shadow-xl">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">AI Performance Metrics</h2>
+        <select
+          value={selectedMetric}
+          onChange={handleMetricChange}
+          className="bg-gray-700 text-white rounded-md px-3 py-1"
+        >
+          <option value="traffic">Traffic</option>
+          <option value="engagement">Engagement</option>
+          <option value="conversions">Conversions</option>
+        </select>
+      </div>
+      <div className="h-64 flex items-end space-x-2">
+        {chartData.map((value, index) => (
+          <div
             key={index}
-            onClick={() => setActiveTab(index)}
-            className={`flex-1 text-center py-4 px-6 font-semibold transition-colors duration-300 ${
-              activeTab === index
-                ? "border-b-4 border-blue-600 text-blue-600"
-                : "text-gray-600 hover:text-gray-800"
-            }`}
-          >
-            {service.title}
-          </button>
+            className="w-12 bg-blue-500 rounded-t-lg transition-all duration-500"
+            style={{ height: `${value}px` }}
+          ></div>
         ))}
       </div>
-      <div className="p-4">
-        <h3 className="text-2xl font-bold text-gray-800 mb-4">
-          {services[activeTab].title}
-        </h3>
-        <p className="text-gray-600">{services[activeTab].description}</p>
-      </div>
+      <p className="text-sm text-gray-400 text-center mt-4">
+        Simulated data for {selectedMetric}.
+      </p>
     </div>
   );
 };
 
-export default ServiceTabs;
+export default DataDashboard;
