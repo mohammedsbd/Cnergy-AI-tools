@@ -1,37 +1,75 @@
-import React, { useState } from "react";
+import React, { useRef } from "react";
 
-const BreakingNewsAlert = ({ title, link }) => {
-  const [isVisible, setIsVisible] = useState(true);
+const RelatedArticlesScroll = ({ articles }) => {
+  const scrollRef = useRef(null);
 
-  if (!isVisible) return null;
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = 300; // Adjust as needed
+      scrollRef.current.scrollBy({
+        left: direction * scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
-    <div className="bg-red-600 text-white p-3 flex justify-between items-center animate-fade-in-down">
-      <div className="flex items-center">
-        <span className="font-bold uppercase text-sm mr-2">Breaking News:</span>
-        <a href={link} className="hover:underline">
-          {title}
-        </a>
+    <div className="relative">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-2xl font-bold text-gray-900">Related Articles</h3>
       </div>
-      <button
-        onClick={() => setIsVisible(false)}
-        className="ml-4 text-white hover:text-gray-200"
+      <div
+        className="flex overflow-x-auto scrollbar-hide space-x-4 p-2"
+        ref={scrollRef}
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5"
-          viewBox="0 0 20 20"
-          fill="currentColor"
+        {articles.map((article, index) => (
+          <div key={index} className="flex-none w-80">
+            <FeaturedArticleCard article={article} />
+          </div>
+        ))}
+      </div>
+      <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 flex justify-between px-2">
+        <button
+          onClick={() => scroll(-1)}
+          className="bg-gray-800 bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
         >
-          <path
-            fillRule="evenodd"
-            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+        <button
+          onClick={() => scroll(1)}
+          className="bg-gray-800 bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 };
 
-export default BreakingNewsAlert;
+export default RelatedArticlesScroll;
