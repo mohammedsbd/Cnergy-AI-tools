@@ -1,22 +1,26 @@
 import React from "react";
 
-const CTABanner = () => {
+const SocialMediaLinks = () => {
+  const socialLinks = [
+    { name: "Twitter", url: "#", icon: "🐦" },
+    { name: "LinkedIn", url: "#", icon: "💼" },
+    { name: "Facebook", url: "#", icon: "📘" },
+  ];
+
   return (
-    <div className="bg-blue-600 text-white py-12 px-4 text-center rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold mb-2">
-        Ready to Transform Your Business?
-      </h2>
-      <p className="text-lg mb-6 opacity-90">
-        Start your free trial today and discover the future with AI.
-      </p>
-      <a
-        href="/signup"
-        className="bg-white text-blue-600 font-semibold py-3 px-8 rounded-full shadow-lg transition duration-300 hover:bg-gray-100"
-      >
-        Start Free Trial
-      </a>
+    <div className="flex justify-center space-x-4">
+      {socialLinks.map((link) => (
+        <a
+          key={link.name}
+          href={link.url}
+          aria-label={link.name}
+          className="text-gray-500 hover:text-blue-600 transition duration-300"
+        >
+          <span className="text-2xl">{link.icon}</span>
+        </a>
+      ))}
     </div>
   );
 };
 
-export default CTABanner;
+export default SocialMediaLinks;
