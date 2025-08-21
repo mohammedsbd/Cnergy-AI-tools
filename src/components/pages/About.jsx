@@ -1,37 +1,27 @@
-import React, { useState } from "react";
+import React from "react";
 
-const DynamicFeatureGrid = ({ features }) => {
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-
-  const handleMouseEnter = (index) => {
-    setHoveredIndex(index);
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredIndex(null);
-  };
+const ClientMarquee = ({ logos }) => {
+  // To create the seamless loop, we duplicate the logos array
+  const duplicatedLogos = [...logos, ...logos];
 
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 p-8">
-      {features.map((feature, index) => (
-        <div
-          key={index}
-          className="relative bg-white rounded-xl shadow-lg p-8 transition-all duration-300 transform hover:scale-105"
-          onMouseEnter={() => handleMouseEnter(index)}
-          onMouseLeave={handleMouseLeave}
-        >
-          {hoveredIndex === index && (
-            <div className="absolute inset-0 bg-blue-500 rounded-xl opacity-20 animate-pulse"></div>
-          )}
-          <div className="text-4xl text-blue-600 mb-4">{feature.icon}</div>
-          <h3 className="text-2xl font-bold text-gray-800 mb-2">
-            {feature.title}
-          </h3>
-          <p className="text-gray-600">{feature.description}</p>
-        </div>
-      ))}
+    <div className="relative w-full overflow-hidden py-8 bg-gray-100">
+      <div className="whitespace-nowrap animate-marquee flex">
+        {duplicatedLogos.map((logo, index) => (
+          <div
+            key={index}
+            className="flex-shrink-0 mx-8 opacity-60 hover:opacity-100 transition duration-300"
+          >
+            <img
+              src={logo.src}
+              alt={logo.alt}
+              className="h-16 object-contain"
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
-export default DynamicFeatureGrid;
+export default ClientMarquee;
