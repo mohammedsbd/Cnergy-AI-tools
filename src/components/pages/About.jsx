@@ -1,36 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
-const FinancialData = ({ initialData }) => {
-  const [marketData, setMarketData] = useState(initialData);
-
-  useEffect(() => {
-    // Simulate real-time updates every 5 seconds
-    const interval = setInterval(() => {
-      setMarketData((prevData) =>
-        prevData.map((item) => ({
-          ...item,
-          price: (item.price * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2),
-        }))
-      );
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
+const RecipeCard = ({ recipe }) => {
   return (
-    <div className="bg-gray-800 text-white p-6 rounded-lg shadow-lg">
-      <h3 className="text-xl font-bold mb-4">Market Data</h3>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {marketData.map((item) => (
-          <div key={item.symbol} className="bg-gray-700 p-4 rounded-lg">
-            <h4 className="text-lg font-semibold">{item.symbol}</h4>
-            <p className="text-sm text-gray-400">{item.company}</p>
-            <p className="text-2xl font-bold mt-2">${item.price}</p>
-          </div>
-        ))}
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-105 transition duration-300">
+      <img
+        src={recipe.imageUrl}
+        alt={recipe.title}
+        className="w-full h-56 object-cover"
+      />
+      <div className="p-6">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-sm font-semibold text-gray-500">
+            {recipe.cuisine}
+          </span>
+          <span className="text-sm text-gray-500">{recipe.rating} ★</span>
+        </div>
+        <a href={recipe.link} className="block">
+          <h3 className="text-xl font-bold text-gray-900 leading-tight hover:text-blue-600">
+            {recipe.title}
+          </h3>
+        </a>
+        <p className="text-gray-600 text-sm mt-2">{recipe.description}</p>
+        <div className="flex items-center text-gray-500 text-xs mt-4">
+          <span className="mr-4">⏱️ {recipe.prepTime}</span>
+          <span>🍳 {recipe.cookTime}</span>
+        </div>
       </div>
     </div>
   );
 };
 
-export default FinancialData;
+export default RecipeCard;
