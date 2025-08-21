@@ -1,106 +1,88 @@
 import React, { useState } from "react";
 
-const WeatherWidget = () => {
-  const [city, setCity] = useState("New York");
-  const [weatherData, setWeatherData] = useState({
-    temperature: 25,
-    condition: "Sunny",
-    icon: "☀️",
-  });
+const LoginForm = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
-  const cities = [
-    { name: "New York", temperature: 25, condition: "Sunny", icon: "☀️" },
-    { name: "London", temperature: 18, condition: "Cloudy", icon: "☁️" },
-    { name: "Tokyo", temperature: 30, condition: "Rainy", icon: "🌧️" },
-    { name: "Sydney", temperature: 22, condition: "Windy", icon: "🌬️" },
-  ];
-
-  const updateCity = (selectedCity) => {
-    setCity(selectedCity);
-    const data = cities.find((c) => c.name === selectedCity);
-    setWeatherData(data);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!email || !password) {
+      setError("All fields are required.");
+      return;
+    }
+    if (!email.includes("@")) {
+      setError("Invalid email format.");
+      return;
+    }
+    setError("");
+    setSubmitted(true);
   };
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Weather Widget</h2>
-      <div style={styles.citySelector}>
-        <label htmlFor="city" style={styles.label}>
-          Select City:
-        </label>
-        <select
-          id="city"
-          value={city}
-          onChange={(e) => updateCity(e.target.value)}
-          style={styles.select}
-        >
-          {cities.map((c) => (
-            <option key={c.name} value={c.name}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div style={styles.weatherCard}>
-        <div style={styles.icon}>{weatherData.icon}</div>
-        <div style={styles.info}>
-          <div style={styles.temp}>{weatherData.temperature}°C</div>
-          <div style={styles.condition}>{weatherData.condition}</div>
-        </div>
-      </div>
+      <h2>Login</h2>
+      {submitted ? (
+        <div style={styles.success}>Login successful! Welcome back.</div>
+      ) : (
+        <form onSubmit={handleSubmit} style={styles.form}>
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={styles.input}
+          />
+          <label>Password:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={styles.input}
+          />
+          {error && <div style={styles.error}>{error}</div>}
+          <button type="submit" style={styles.button}>
+            Login
+          </button>
+        </form>
+      )}
     </div>
   );
 };
 
 const styles = {
   container: {
-    width: "300px",
+    maxWidth: "400px",
+    margin: "50px auto",
     padding: "20px",
-    margin: "40px auto",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    fontFamily: "sans-serif",
-    backgroundColor: "#f0f8ff",
-    textAlign: "center",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    fontFamily: "Arial, sans-serif",
   },
-  title: {
-    marginBottom: "15px",
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
   },
-  citySelector: {
-    marginBottom: "20px",
+  input: {
+    padding: "10px",
+    fontSize: "16px",
   },
-  label: {
-    marginRight: "10px",
-    fontWeight: "bold",
+  button: {
+    padding: "10px",
+    backgroundColor: "#007bff",
+    color: "white",
+    border: "none",
   },
-  select: {
-    padding: "8px",
+  error: {
+    color: "red",
     fontSize: "14px",
   },
-  weatherCard: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#fff",
-    padding: "15px",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-  },
-  icon: {
-    fontSize: "40px",
-    marginRight: "15px",
-  },
-  info: {
-    textAlign: "left",
-  },
-  temp: {
-    fontSize: "24px",
-    fontWeight: "bold",
-  },
-  condition: {
+  success: {
+    color: "green",
     fontSize: "16px",
-    color: "#555",
   },
 };
 
-export default WeatherWidget;
+export default LoginForm;
