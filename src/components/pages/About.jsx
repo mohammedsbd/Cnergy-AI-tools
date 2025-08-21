@@ -1,133 +1,106 @@
 import React, { useState } from "react";
 
-const TaskDashboard = () => {
-  const [tasks, setTasks] = useState([
-    { id: 1, title: "Learn React", completed: false },
-    { id: 2, title: "Write JSX code", completed: true },
-  ]);
+const WeatherWidget = () => {
+  const [city, setCity] = useState("New York");
+  const [weatherData, setWeatherData] = useState({
+    temperature: 25,
+    condition: "Sunny",
+    icon: "☀️",
+  });
 
-  const [newTask, setNewTask] = useState("");
+  const cities = [
+    { name: "New York", temperature: 25, condition: "Sunny", icon: "☀️" },
+    { name: "London", temperature: 18, condition: "Cloudy", icon: "☁️" },
+    { name: "Tokyo", temperature: 30, condition: "Rainy", icon: "🌧️" },
+    { name: "Sydney", temperature: 22, condition: "Windy", icon: "🌬️" },
+  ];
 
-  const addTask = () => {
-    if (!newTask.trim()) return;
-    const newEntry = {
-      id: Date.now(),
-      title: newTask,
-      completed: false,
-    };
-    setTasks([...tasks, newEntry]);
-    setNewTask("");
-  };
-
-  const toggleTask = (id) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
-
-  const deleteTask = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+  const updateCity = (selectedCity) => {
+    setCity(selectedCity);
+    const data = cities.find((c) => c.name === selectedCity);
+    setWeatherData(data);
   };
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.header}>Task Manager</h1>
-      <div style={styles.inputContainer}>
-        <input
-          type="text"
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
-          placeholder="Add a task..."
-          style={styles.input}
-        />
-        <button onClick={addTask} style={styles.addButton}>
-          Add
-        </button>
+      <h2 style={styles.title}>Weather Widget</h2>
+      <div style={styles.citySelector}>
+        <label htmlFor="city" style={styles.label}>
+          Select City:
+        </label>
+        <select
+          id="city"
+          value={city}
+          onChange={(e) => updateCity(e.target.value)}
+          style={styles.select}
+        >
+          {cities.map((c) => (
+            <option key={c.name} value={c.name}>
+              {c.name}
+            </option>
+          ))}
+        </select>
       </div>
-      <ul style={styles.taskList}>
-        {tasks.map((task) => (
-          <li key={task.id} style={styles.taskItem}>
-            <input
-              type="checkbox"
-              checked={task.completed}
-              onChange={() => toggleTask(task.id)}
-            />
-            <span
-              style={{
-                ...styles.taskText,
-                textDecoration: task.completed ? "line-through" : "none",
-              }}
-            >
-              {task.title}
-            </span>
-            <button
-              onClick={() => deleteTask(task.id)}
-              style={styles.deleteButton}
-            >
-              ✖
-            </button>
-          </li>
-        ))}
-      </ul>
+      <div style={styles.weatherCard}>
+        <div style={styles.icon}>{weatherData.icon}</div>
+        <div style={styles.info}>
+          <div style={styles.temp}>{weatherData.temperature}°C</div>
+          <div style={styles.condition}>{weatherData.condition}</div>
+        </div>
+      </div>
     </div>
   );
 };
 
 const styles = {
   container: {
-    width: "400px",
-    margin: "40px auto",
+    width: "300px",
     padding: "20px",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    fontFamily: "Arial, sans-serif",
-    backgroundColor: "#f9f9f9",
-  },
-  header: {
+    margin: "40px auto",
+    border: "1px solid #ddd",
+    borderRadius: "10px",
+    fontFamily: "sans-serif",
+    backgroundColor: "#f0f8ff",
     textAlign: "center",
+  },
+  title: {
+    marginBottom: "15px",
+  },
+  citySelector: {
     marginBottom: "20px",
   },
-  inputContainer: {
-    display: "flex",
-    gap: "10px",
-    marginBottom: "20px",
+  label: {
+    marginRight: "10px",
+    fontWeight: "bold",
   },
-  input: {
-    flex: 1,
-    padding: "10px",
-    fontSize: "16px",
+  select: {
+    padding: "8px",
+    fontSize: "14px",
   },
-  addButton: {
-    padding: "10px 15px",
-    fontSize: "16px",
-    backgroundColor: "#28a745",
-    color: "#fff",
-    border: "none",
-    cursor: "pointer",
-  },
-  taskList: {
-    listStyle: "none",
-    padding: 0,
-  },
-  taskItem: {
+  weatherCard: {
     display: "flex",
     alignItems: "center",
-    marginBottom: "10px",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+    padding: "15px",
+    borderRadius: "8px",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
   },
-  taskText: {
-    flex: 1,
-    marginLeft: "10px",
+  icon: {
+    fontSize: "40px",
+    marginRight: "15px",
   },
-  deleteButton: {
-    marginLeft: "10px",
-    backgroundColor: "#dc3545",
-    color: "white",
-    border: "none",
-    padding: "5px 10px",
-    cursor: "pointer",
+  info: {
+    textAlign: "left",
+  },
+  temp: {
+    fontSize: "24px",
+    fontWeight: "bold",
+  },
+  condition: {
+    fontSize: "16px",
+    color: "#555",
   },
 };
 
-export default TaskDashboard;
+export default WeatherWidget;
