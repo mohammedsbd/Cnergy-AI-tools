@@ -1,24 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 
-const FAQItem = ({ question, answer }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
+const TeamMemberCard = ({ name, role, photo }) => {
   return (
-    <div className="border-b border-gray-200">
-      <button
-        className="flex justify-between items-center w-full py-4 text-left font-semibold text-lg text-gray-800 focus:outline-none"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <span>{question}</span>
-        <span>{isOpen ? "−" : "+"}</span>
-      </button>
-      {isOpen && (
-        <div className="py-2 text-gray-600">
-          <p>{answer}</p>
-        </div>
-      )}
+    <div className="text-center p-6">
+      <img
+        src={photo}
+        alt={name}
+        className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
+      />
+      <h4 className="text-xl font-semibold text-gray-800">{name}</h4>
+      <p className="text-gray-500">{role}</p>
     </div>
   );
 };
 
-export default FAQItem;
+export default TeamMemberCard;
