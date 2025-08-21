@@ -1,40 +1,41 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-const LiveBlog = ({ initialUpdates }) => {
-  const [updates, setUpdates] = useState(initialUpdates);
+const ArticleRating = ({ articleId }) => {
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [isRated, setIsRated] = useState(false);
 
-  useEffect(() => {
-    // Simulate fetching new updates every 10 seconds
-    const interval = setInterval(() => {
-      const newUpdate = {
-        id: Date.now(),
-        timestamp: new Date().toLocaleTimeString(),
-        text: `A new live update has occurred. This is a simulated event.`,
-      };
-      setUpdates((prevUpdates) => [newUpdate, ...prevUpdates]);
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const handleRating = (star) => {
+    setRating(star);
+    setIsRated(true);
+    console.log(`User rated article ${articleId} with ${star} stars.`);
+  };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-        <span className="h-3 w-3 rounded-full bg-red-500 animate-pulse mr-2"></span>
-        Live Blog
-      </h2>
-      <div className="space-y-4">
-        {updates.map((update) => (
-          <div key={update.id} className="border-l-4 border-gray-200 pl-4 py-2">
-            <div className="flex items-center text-sm text-gray-500 mb-1">
-              <span className="font-semibold">{update.timestamp}</span>
-            </div>
-            <p className="text-gray-700">{update.text}</p>
-          </div>
+    <div className="bg-gray-100 p-4 rounded-lg text-center">
+      <h4 className="font-semibold text-gray-800 mb-2">Rate this article:</h4>
+      <div className="flex justify-center space-x-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <span
+            key={star}
+            onMouseEnter={() => setHoverRating(star)}
+            onMouseLeave={() => setHoverRating(0)}
+            onClick={() => handleRating(star)}
+            className={`text-2xl cursor-pointer transition-colors duration-200 ${
+              (hoverRating || rating) >= star
+                ? "text-yellow-400"
+                : "text-gray-300"
+            }`}
+          >
+            ★
+          </span>
         ))}
       </div>
+      {isRated && (
+        <p className="text-sm text-gray-600 mt-2">Thanks for your feedback!</p>
+      )}
     </div>
   );
 };
 
-export default LiveBlog;
+export default ArticleRating;
