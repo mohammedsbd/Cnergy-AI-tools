@@ -1,88 +1,54 @@
 import React, { useState } from "react";
 
-const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+const CounterHistory = () => {
+  const [count, setCount] = useState(0);
+  const [history, setHistory] = useState([]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!email || !password) {
-      setError("All fields are required.");
-      return;
-    }
-    if (!email.includes("@")) {
-      setError("Invalid email format.");
-      return;
-    }
-    setError("");
-    setSubmitted(true);
+  const updateCount = (delta) => {
+    const newCount = count + delta;
+    setCount(newCount);
+    setHistory([...history, newCount]);
   };
 
   return (
     <div style={styles.container}>
-      <h2>Login</h2>
-      {submitted ? (
-        <div style={styles.success}>Login successful! Welcome back.</div>
-      ) : (
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={styles.input}
-          />
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={styles.input}
-          />
-          {error && <div style={styles.error}>{error}</div>}
-          <button type="submit" style={styles.button}>
-            Login
-          </button>
-        </form>
-      )}
+      <h2>Counter</h2>
+      <div style={styles.counter}>{count}</div>
+      <div style={styles.buttons}>
+        <button onClick={() => updateCount(1)}>Increment</button>
+        <button onClick={() => updateCount(-1)}>Decrement</button>
+      </div>
+      <h3>History</h3>
+      <ul style={styles.history}>
+        {history.map((val, index) => (
+          <li key={index}>{val}</li>
+        ))}
+      </ul>
     </div>
   );
 };
 
 const styles = {
   container: {
-    maxWidth: "400px",
-    margin: "50px auto",
     padding: "20px",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    fontFamily: "Arial, sans-serif",
+    maxWidth: "400px",
+    margin: "auto",
+    textAlign: "center",
+    fontFamily: "Arial",
   },
-  form: {
+  counter: {
+    fontSize: "40px",
+    margin: "20px 0",
+  },
+  buttons: {
     display: "flex",
-    flexDirection: "column",
+    justifyContent: "center",
     gap: "10px",
   },
-  input: {
-    padding: "10px",
-    fontSize: "16px",
-  },
-  button: {
-    padding: "10px",
-    backgroundColor: "#007bff",
-    color: "white",
-    border: "none",
-  },
-  error: {
-    color: "red",
-    fontSize: "14px",
-  },
-  success: {
-    color: "green",
-    fontSize: "16px",
+  history: {
+    textAlign: "left",
+    marginTop: "20px",
   },
 };
 
-export default LoginForm;
+export default CounterHistory;
