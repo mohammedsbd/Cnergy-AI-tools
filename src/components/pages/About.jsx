@@ -1,49 +1,37 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
-const CommentSection = ({ comments }) => {
-  const [newComment, setNewComment] = useState("");
+const VideoNewsPlayer = ({ videoSource, title }) => {
+  const videoRef = useRef(null);
+  const [isMuted, setIsMuted] = useState(true);
 
-  const handleCommentSubmit = (e) => {
-    e.preventDefault();
-    if (newComment.trim() === "") return;
-    // In a real app, you would send this to an API
-    console.log("New comment submitted:", newComment);
-    setNewComment("");
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
   };
 
   return (
-    <div className="bg-gray-100 p-6 rounded-lg">
-      <h3 className="text-2xl font-bold text-gray-800 mb-4">Comments</h3>
-      <form onSubmit={handleCommentSubmit} className="mb-6">
-        <textarea
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Write your comment..."
-          rows="4"
-          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        ></textarea>
-        <button
-          type="submit"
-          className="mt-2 px-6 py-2 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700"
-        >
-          Post Comment
-        </button>
-      </form>
-      <div className="space-y-4">
-        {comments.map((comment, index) => (
-          <div key={index} className="bg-white p-4 rounded-lg shadow-sm">
-            <div className="flex items-center space-x-3 mb-2">
-              <span className="font-semibold text-gray-800">
-                {comment.author}
-              </span>
-              <span className="text-xs text-gray-500">{comment.date}</span>
-            </div>
-            <p className="text-gray-700">{comment.text}</p>
-          </div>
-        ))}
+    <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
+      <video
+        ref={videoRef}
+        className="w-full h-full"
+        src={videoSource}
+        autoPlay
+        loop
+        muted={isMuted}
+      ></video>
+      <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black to-transparent text-white">
+        <h3 className="text-lg font-bold">{title}</h3>
       </div>
+      <button
+        onClick={toggleMute}
+        className="absolute top-4 right-4 bg-gray-900 bg-opacity-50 text-white p-2 rounded-full"
+      >
+        {isMuted ? "🔇" : "🔊"}
+      </button>
     </div>
   );
 };
 
-export default CommentSection;
+export default VideoNewsPlayer;
