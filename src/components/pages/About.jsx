@@ -1,31 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 
-const CaseStudyCard = ({ title, description, tags, companyLogo }) => {
+const ServiceTabs = ({ services }) => {
+  const [activeTab, setActiveTab] = useState(0);
+
   return (
-    <div className="bg-gray-800 text-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition duration-300">
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-2xl font-bold">{title}</h3>
-          <img
-            src={companyLogo}
-            alt="Company Logo"
-            className="h-10 object-contain"
-          />
-        </div>
-        <p className="text-gray-300 mb-4">{description}</p>
-        <div className="flex flex-wrap gap-2">
-          {tags.map((tag, index) => (
-            <span
-              key={index}
-              className="bg-blue-600 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+    <div className="bg-white p-8 rounded-lg shadow-lg max-w-4xl mx-auto">
+      <div className="flex border-b border-gray-200 mb-6">
+        {services.map((service, index) => (
+          <button
+            key={index}
+            onClick={() => setActiveTab(index)}
+            className={`flex-1 text-center py-4 px-6 font-semibold transition-colors duration-300 ${
+              activeTab === index
+                ? "border-b-4 border-blue-600 text-blue-600"
+                : "text-gray-600 hover:text-gray-800"
+            }`}
+          >
+            {service.title}
+          </button>
+        ))}
+      </div>
+      <div className="p-4">
+        <h3 className="text-2xl font-bold text-gray-800 mb-4">
+          {services[activeTab].title}
+        </h3>
+        <p className="text-gray-600">{services[activeTab].description}</p>
       </div>
     </div>
   );
 };
 
-export default CaseStudyCard;
+export default ServiceTabs;
