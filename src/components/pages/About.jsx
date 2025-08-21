@@ -1,56 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const DataDashboard = () => {
-  const [selectedMetric, setSelectedMetric] = useState("traffic");
+const AnimatedValueProps = ({ propositions }) => {
+  const [currentProp, setCurrentProp] = useState(0);
 
-  const handleMetricChange = (e) => {
-    setSelectedMetric(e.target.value);
-  };
-
-  const getChartData = () => {
-    // In a real app, this would fetch data from an API
-    switch (selectedMetric) {
-      case "traffic":
-        return [100, 200, 150, 300, 250];
-      case "engagement":
-        return [50, 75, 60, 90, 85];
-      case "conversions":
-        return [10, 15, 12, 20, 18];
-      default:
-        return [];
-    }
-  };
-
-  const chartData = getChartData();
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentProp((prevProp) => (prevProp + 1) % propositions.length);
+    }, 5000); // Change proposition every 5 seconds
+    return () => clearInterval(interval);
+  }, [propositions.length]);
 
   return (
-    <div className="bg-gray-800 text-white rounded-lg p-8 shadow-xl">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">AI Performance Metrics</h2>
-        <select
-          value={selectedMetric}
-          onChange={handleMetricChange}
-          className="bg-gray-700 text-white rounded-md px-3 py-1"
+    <div className="text-center p-8 bg-blue-600 text-white rounded-lg shadow-lg">
+      <p className="text-xl md:text-2xl font-light mb-2">Our AI helps you</p>
+      <h3 className="text-3xl md:text-4xl font-extrabold h-12 overflow-hidden relative">
+        <span
+          className="absolute transition-transform duration-1000 ease-in-out"
+          style={{ transform: `translateY(-${currentProp * 100}%)` }}
         >
-          <option value="traffic">Traffic</option>
-          <option value="engagement">Engagement</option>
-          <option value="conversions">Conversions</option>
-        </select>
-      </div>
-      <div className="h-64 flex items-end space-x-2">
-        {chartData.map((value, index) => (
-          <div
-            key={index}
-            className="w-12 bg-blue-500 rounded-t-lg transition-all duration-500"
-            style={{ height: `${value}px` }}
-          ></div>
-        ))}
-      </div>
-      <p className="text-sm text-gray-400 text-center mt-4">
-        Simulated data for {selectedMetric}.
-      </p>
+          {propositions.map((prop, index) => (
+            <div key={index} className="h-12 flex items-center justify-center">
+              {prop}
+            </div>
+          ))}
+        </span>
+      </h3>
     </div>
   );
 };
 
-export default DataDashboard;
+export default AnimatedValueProps;
