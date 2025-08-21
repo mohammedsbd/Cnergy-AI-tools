@@ -1,37 +1,53 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 
-const VideoNewsPlayer = ({ videoSource, title }) => {
-  const videoRef = useRef(null);
-  const [isMuted, setIsMuted] = useState(true);
+const NewsPoll = ({ question, options }) => {
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [showResults, setShowResults] = useState(false);
 
-  const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-    }
+  const handleVote = (optionIndex) => {
+    setSelectedOption(optionIndex);
+    // Simulate updating vote counts
+    setTimeout(() => setShowResults(true), 500);
   };
 
+  const totalVotes = options.reduce((sum, opt) => sum + (opt.votes || 0), 0);
+
   return (
-    <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
-      <video
-        ref={videoRef}
-        className="w-full h-full"
-        src={videoSource}
-        autoPlay
-        loop
-        muted={isMuted}
-      ></video>
-      <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black to-transparent text-white">
-        <h3 className="text-lg font-bold">{title}</h3>
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      <h3 className="text-xl font-bold text-gray-900 mb-4">{question}</h3>
+      <div className="space-y-4">
+        {options.map((option, index) => (
+          <div key={index}>
+            <button
+              onClick={() => handleVote(index)}
+              disabled={showResults}
+              className={`w-full text-left p-4 rounded-lg border transition duration-300 ${
+                selectedOption === index
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-200"
+              }`}
+            >
+              {option.text}
+            </button>
+            {showResults && (
+              <div className="mt-2 bg-gray-200 rounded-full h-2.5">
+                <div
+                  className="bg-blue-600 h-2.5 rounded-full"
+                  style={{
+                    width: `${(option.votes / totalVotes) * 100 || 0}%`,
+                  }}
+                ></div>
+                <span className="text-xs text-gray-600 mt-1 block">
+                  {option.votes} votes (
+                  {((option.votes / totalVotes) * 100).toFixed(1)}%)
+                </span>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
-      <button
-        onClick={toggleMute}
-        className="absolute top-4 right-4 bg-gray-900 bg-opacity-50 text-white p-2 rounded-full"
-      >
-        {isMuted ? "🔇" : "🔊"}
-      </button>
     </div>
   );
 };
 
-export default VideoNewsPlayer;
+export default NewsPoll;
