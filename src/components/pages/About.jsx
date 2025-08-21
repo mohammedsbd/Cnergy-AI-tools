@@ -1,45 +1,32 @@
 import React, { useState } from "react";
 
-const PhotoGallery = ({ photos }) => {
-  const [selectedImage, setSelectedImage] = useState(null);
+const TopicSubscription = ({ topic }) => {
+  const [isSubscribed, setIsSubscribed] = useState(false);
+
+  const handleSubscribe = () => {
+    setIsSubscribed(!isSubscribed);
+    // In a real app, this would send an API request
+    const action = isSubscribed ? "Unsubscribed from" : "Subscribed to";
+    console.log(`${action} ${topic}`);
+  };
 
   return (
-    <div>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {photos.map((photo, index) => (
-          <img
-            key={index}
-            src={photo.thumbnailUrl}
-            alt={photo.caption}
-            onClick={() => setSelectedImage(photo)}
-            className="w-full h-auto rounded-lg cursor-pointer object-cover transform hover:scale-105 transition-transform duration-200"
-          />
-        ))}
-      </div>
-      {selectedImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50">
-          <button
-            onClick={() => setSelectedImage(null)}
-            className="absolute top-4 right-4 text-white text-3xl font-bold"
-          >
-            &times;
-          </button>
-          <div className="flex flex-col items-center">
-            <img
-              src={selectedImage.fullUrl}
-              alt={selectedImage.caption}
-              className="max-h-full max-w-full rounded-lg"
-            />
-            {selectedImage.caption && (
-              <p className="text-white text-center mt-4">
-                {selectedImage.caption}
-              </p>
-            )}
-          </div>
-        </div>
-      )}
+    <div className="bg-gray-100 p-4 rounded-lg flex items-center justify-between">
+      <span className="font-semibold text-gray-800">
+        Get updates on: <span className="text-blue-600">{topic}</span>
+      </span>
+      <button
+        onClick={handleSubscribe}
+        className={`px-4 py-2 rounded-full font-semibold transition duration-300 ${
+          isSubscribed
+            ? "bg-red-500 text-white hover:bg-red-600"
+            : "bg-blue-600 text-white hover:bg-blue-700"
+        }`}
+      >
+        {isSubscribed ? "Unsubscribe" : "Subscribe"}
+      </button>
     </div>
   );
 };
 
-export default PhotoGallery;
+export default TopicSubscription;
