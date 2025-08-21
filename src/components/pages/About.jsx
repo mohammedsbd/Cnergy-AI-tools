@@ -1,15 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 
-const ServiceCard = ({ image, title, description }) => {
+const FAQItem = ({ question, answer }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-105 transition duration-300">
-      <img src={image} alt={title} className="w-full h-48 object-cover" />
-      <div className="p-6">
-        <h3 className="text-2xl font-bold text-gray-800 mb-2">{title}</h3>
-        <p className="text-gray-600">{description}</p>
-      </div>
+    <div className="border-b border-gray-200">
+      <button
+        className="flex justify-between items-center w-full py-4 text-left font-semibold text-lg text-gray-800 focus:outline-none"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span>{question}</span>
+        <span>{isOpen ? "−" : "+"}</span>
+      </button>
+      {isOpen && (
+        <div className="py-2 text-gray-600">
+          <p>{answer}</p>
+        </div>
+      )}
     </div>
   );
 };
 
-export default ServiceCard;
+export default FAQItem;
