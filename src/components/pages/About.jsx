@@ -1,23 +1,26 @@
-function ProductGrid({ products }) {
+function Countdown({ seconds }) {
+  const [timeLeft, setTimeLeft] = React.useState(seconds);
+
+  React.useEffect(() => {
+    if (timeLeft <= 0) return;
+    const interval = setInterval(() => setTimeLeft((t) => t - 1), 1000);
+    return () => clearInterval(interval);
+  }, [timeLeft]);
+
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-      {products.map((product) => (
-        <div
-          key={product.id}
-          style={{ border: "1px solid #ddd", padding: "1rem", width: "200px" }}
-        >
-          <img
-            src={product.image}
-            alt={product.name}
-            style={{ width: "100%" }}
-          />
-          <h4>{product.name}</h4>
-          <p>${product.price}</p>
-          <button onClick={() => alert(`${product.name} added to cart!`)}>
-            Add to Cart
-          </button>
-        </div>
-      ))}
+    <div>
+      <h3>Countdown: {timeLeft > 0 ? timeLeft : "Time's up!"}</h3>
     </div>
   );
 }
+function About() {
+  return (
+    <div>
+      <h2>About This Application</h2>
+      <p>This application demonstrates a countdown timer using React.</p>
+      <Countdown seconds={10} />
+    </div>
+  );
+}
+export default About;
+import React from "react";
