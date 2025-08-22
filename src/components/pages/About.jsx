@@ -1,19 +1,35 @@
-function ThemeToggler() {
-  const [dark, setDark] = React.useState(false);
+function LoginForm() {
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [error, setError] = React.useState("");
 
-  const themeStyle = {
-    backgroundColor: dark ? "#333" : "#fff",
-    color: dark ? "#fff" : "#000",
-    padding: "1rem",
-    textAlign: "center",
+  const handleLogin = () => {
+    if (!email || !password) {
+      setError("Please fill in all fields.");
+    } else {
+      setError("");
+      alert(`Logging in as ${email}`);
+    }
   };
 
   return (
-    <div style={themeStyle}>
-      <h2>{dark ? "Dark" : "Light"} Theme</h2>
-      <button onClick={() => setDark(!dark)}>
-        Switch to {dark ? "Light" : "Dark"} Mode
-      </button>
+    <div style={{ maxWidth: "300px" }}>
+      <h3>Login</h3>
+      <input
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <br />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <br />
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <button onClick={handleLogin}>Login</button>
     </div>
   );
 }
