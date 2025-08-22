@@ -1,38 +1,65 @@
-function UserDashboard({ user }) {
+function MultiStepForm() {
+  const [step, setStep] = React.useState(1);
+  const [formData, setFormData] = React.useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const next = () => setStep(step + 1);
+  const back = () => setStep(step - 1);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   return (
-    <div
-      style={{
-        maxWidth: "600px",
-        margin: "auto",
-        padding: "2rem",
-        fontFamily: "sans-serif",
-      }}
-    >
-      <header style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-        <img
-          src={user.avatar}
-          alt="avatar"
-          width="80"
-          style={{ borderRadius: "50%" }}
-        />
-        <div>
-          <h2>{user.name}</h2>
-          <p>{user.email}</p>
-        </div>
-      </header>
-
-      <section style={{ marginTop: "2rem" }}>
-        <h3>Stats</h3>
-        <ul>
-          <li>Posts: {user.posts}</li>
-          <li>Followers: {user.followers}</li>
-          <li>Following: {user.following}</li>
-        </ul>
-      </section>
-
-      <section style={{ marginTop: "2rem" }}>
-        <button onClick={() => alert("Settings clicked")}>Edit Profile</button>
-      </section>
+    <div style={{ maxWidth: "400px", margin: "auto" }}>
+      {step === 1 && (
+        <>
+          <h3>Step 1: Personal Info</h3>
+          <input
+            name="name"
+            placeholder="Name"
+            value={formData.name}
+            onChange={handleChange}
+          />
+          <br />
+          <button onClick={next}>Next</button>
+        </>
+      )}
+      {step === 2 && (
+        <>
+          <h3>Step 2: Contact</h3>
+          <input
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+          <br />
+          <button onClick={back}>Back</button>
+          <button onClick={next}>Next</button>
+        </>
+      )}
+      {step === 3 && (
+        <>
+          <h3>Step 3: Security</h3>
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+          />
+          <br />
+          <button onClick={back}>Back</button>
+          <button onClick={() => alert(JSON.stringify(formData, null, 2))}>
+            Submit
+          </button>
+        </>
+      )}
     </div>
   );
 }
