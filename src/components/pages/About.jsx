@@ -1,22 +1,22 @@
-function Tabs({ tabs }) {
-  const [active, setActive] = React.useState(0);
+function Accordion({ items }) {
+  const [openIndex, setOpenIndex] = React.useState(null);
 
   return (
     <div>
-      <div style={{ display: "flex", gap: "1rem" }}>
-        {tabs.map((tab, index) => (
-          <button
-            key={index}
-            onClick={() => setActive(index)}
-            style={{ fontWeight: active === index ? "bold" : "normal" }}
+      {items.map((item, i) => (
+        <div key={i}>
+          <h4
+            onClick={() => setOpenIndex(openIndex === i ? null : i)}
+            style={{ cursor: "pointer" }}
           >
-            {tab.title}
-          </button>
-        ))}
-      </div>
-      <div style={{ marginTop: "1rem" }}>
-        <p>{tabs[active].content}</p>
-      </div>
+            {item.title}
+          </h4>
+          {openIndex === i && <p>{item.content}</p>}
+        </div>
+      ))}
     </div>
   );
 }
+function About() {
+
+  
