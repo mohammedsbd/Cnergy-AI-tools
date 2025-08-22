@@ -1,22 +1,24 @@
-function Accordion({ items }) {
-  const [openIndex, setOpenIndex] = React.useState(null);
+function SearchableList({ data }) {
+  const [search, setSearch] = React.useState("");
+
+  const filtered = data.filter((item) =>
+    item.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div>
-      {items.map((item, i) => (
-        <div key={i}>
-          <h4
-            onClick={() => setOpenIndex(openIndex === i ? null : i)}
-            style={{ cursor: "pointer" }}
-          >
-            {item.title}
-          </h4>
-          {openIndex === i && <p>{item.content}</p>}
-        </div>
-      ))}
+      <input
+        placeholder="Search..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+      <ul>
+        {filtered.length > 0 ? (
+          filtered.map((item, idx) => <li key={idx}>{item}</li>)
+        ) : (
+          <li>No results found</li>
+        )}
+      </ul>
     </div>
   );
 }
-function About() {
-
-  
